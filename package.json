@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "husky": "husky install",
+    "prepare": "husky install"
   },
   "dependencies": {
     "next": "15.1.7",
@@ -37,15 +38,9 @@
     "typescript": "^5"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.json": [
-      "prettier --write"
-    ],
-    "*.md": [
-      "prettier --write"
+    "*.{ts,tsx}": [
+      "eslint",
+      "prettier --list-different"
     ]
   }
 }
