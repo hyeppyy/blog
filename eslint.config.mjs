@@ -6,7 +6,6 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import importPlugin from 'eslint-plugin-import';
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
 const config = [
   {
     plugins: {
@@ -63,20 +62,12 @@ const config = [
       'import/no-default-export': 'off',
       'import/prefer-default-export': 'off',
       'import/no-unresolved': 'off',
-      'react-hooks/rules-of-hooks': 'error', // react-hooks 규칙 추가
-      'react-hooks/exhaustive-deps': 'warn', // react-hooks 규칙 추가
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
       'react/prop-types': 'off',
       'prefer-const': 'error',
       'no-var': 'error',
       'no-unused-vars': 'off',
-      eqeqeq: 'error',
-      'prefer-destructuring': [
-        'error',
-        {
-          array: false,
-          object: true,
-        },
-      ],
       'import/order': [
         'error',
         {
@@ -107,7 +98,7 @@ const config = [
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       'no-useless-rename': 'error',
       'object-shorthand': 'error',
-      'react/jsx-key': ['error', { checkFragmentShorthand: true }],
+      'react/jsx-key': ['warn', { checkFragmentShorthand: true }],
     },
   },
 ];
