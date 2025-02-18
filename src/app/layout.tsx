@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import Header from '@/components/Header';
 
 export const metadata: Metadata = {
   title: "heyppyy's blog",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 const pretendard = localFont({
   src: '../fonts/PretendardVariable.woff2',
   display: 'swap',
-  weight: '45 920',
+  weight: '100 900',
   variable: '--font-pretendard',
 });
 
@@ -20,7 +21,10 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => (
   <html lang='ko'>
-    <body className={`${pretendard.variable} font-pretendard`}>{children}</body>
+    <body className={`${pretendard.variable} font-pretendard`}>
+      <Header />
+      {children}
+    </body>
   </html>
 );
 

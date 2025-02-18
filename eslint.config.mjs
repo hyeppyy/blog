@@ -36,7 +36,9 @@ const config = [
         rootDir: './',
       },
       'import/resolver': {
-        typescript: {},
+        typescript: {
+          alwaysTryTypes: true,
+        },
       },
     },
     linterOptions: {
