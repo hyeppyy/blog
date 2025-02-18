@@ -1,16 +1,31 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
 export default {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
+      fontFamily: {
+        pretendard: ['var(--font-pretendard)'],
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        light: {
+          background: 'var(--white)',
+          text: 'var(--black)',
+          primary: 'var(--primary)',
+          secondary: 'var(--secondary)',
+          gray01: 'var(--gray-01)',
+        },
+        dark: {
+          background: 'var(--background-dark)',
+          text: 'var(--white)',
+          primary: 'var(--primary-dark)',
+          secondary: 'var(--secondary)',
+          gray01: 'var(--gray-01)',
+        },
       },
     },
   },
