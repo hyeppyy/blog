@@ -1,40 +1,21 @@
-'use client';
-import { useEffect, useState } from 'react';
-import Footer from '@/components/Footer';
+import { LayoutGrid, List } from 'lucide-react';
 import PostCard from '@/components/PostCard';
 import TagFilter from '@/components/TagFilter';
 import { Post } from '@/types/post';
+import { getAllPosts } from '@/utils/posts';
 
-const Home = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [allTags, setAllTags] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
+  const allPosts = await getAllPosts();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch('/api/posts');
-      const data = await response.json();
-      setPosts(data);
+  const allTagsSet = new Set<string>();
+  allPosts.forEach((post: Post) => {
+    post.tags.forEach((tag) => allTagsSet.add(tag));
+  });
+  const allTags = Array.from(allTagsSet);
 
-      const tags = new Set<string>();
-      data.forEach((post: Post) => {
-        post.tags.forEach((tag) => tags.add(tag));
-      });
-      setAllTags(Array.from(tags));
-    };
+  const selectedTags = searchParams.tags ? searchParams.tags.split(',') : [];
 
-    fetchPosts();
-  }, []);
-
-  const handleTagClick = (tag: string) => {
-    setSelectedTags((prevTags) =>
-      prevTags.includes(tag)
-        ? prevTags.filter((t) => t !== tag)
-        : [...prevTags, tag]
-    );
-  };
-
-  const filteredPosts = posts.filter((post) =>
+  const filteredPosts = allPosts.filter((post) =>
     selectedTags.length === 0
       ? true
       : selectedTags.every((tag) => post.tags.includes(tag))
@@ -42,19 +23,21 @@ const Home = () => {
 
   return (
     <div>
-      <main className='pt-[72px] pr-[20px] pb-[20px] pl-[20px] max-w-[1200px] m-0 mx-auto'>
-        <TagFilter
-          tags={allTags}
-          selectedTags={selectedTags}
-          onTagClick={handleTagClick}
-        />
+      <main className='pt-[72px] pb-[20px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
+        <TagFilter tags={allTags} selectedTags={selectedTags} />
+        <div className='flex justify-between'>
+          <span>posts(11)</span>
+          <div className='flex gap-[16px]'>
+            <List />
+            <LayoutGrid />
+          </div>
+        </div>
         <ul>
           {filteredPosts.map((post) => (
             <PostCard key={post.slug} post={post} />
           ))}
         </ul>
       </main>
-      <Footer />
     </div>
   );
 };

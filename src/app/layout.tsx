@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ const RootLayout = ({
     <body className={`${pretendard.variable} font-pretendard`}>
       <Header />
       {children}
+      <Footer />
     </body>
   </html>
 );
