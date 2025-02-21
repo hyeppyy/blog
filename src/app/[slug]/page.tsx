@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import ContentsNav from '@/components/ContentsNav';
 import Giscus from '@/components/Giscus';
 import extractTableOfContents from '@/utils/contents';
@@ -31,7 +32,7 @@ const page = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <>
-      <main className='flex flex-col pt-[72px] pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[240px]'>
+      <main className='flex flex-col pt-[72px] pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[180px]'>
         <span className='text-5xl font-semibold pb-[48px] text-[var(--black)]'>
           {post.title}
         </span>
@@ -60,11 +61,18 @@ const page = async ({ params }: { params: { slug: string } }) => {
           className='prose max-w-none pt-[64px] dark:prose-invert'
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
+        <div className='w-full flex justify-end mt-[32px]'>
+          <Link href='/'>
+            <button className='w-fit px-[12px] py-[8px] rounded-lg border border-[var(--gray-02)] text-[var(--gray-02)] hover:text-[var(--primary)]'>
+              목록으로
+            </button>
+          </Link>
+        </div>
         <Giscus />
       </main>
       <ContentsNav
         headings={flattenedHeadings}
-        className='fixed max-w-[300px] min-w-[300px] top-[80px] right-[20px] z-10 hidden xl:block'
+        className='fixed max-w-[300px] min-w-[230px] top-[80px] right-[20px] z-10 hidden xl:block'
       />
     </>
   );

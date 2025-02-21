@@ -1,26 +1,30 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { X } from 'lucide-react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 interface TagFilterProps {
   tags: string[];
-  selectedTags: string[];
+  selectedTags?: string[];
 }
 
-const TagFilter = ({ tags, selectedTags }: TagFilterProps) => {
+const TagFilter = ({ tags = [] }: TagFilterProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // URL에서 tags 파라미터 가져오기
+  const selectedTags = searchParams.get('tags')?.split(',') || [];
 
   const handleTagClick = (tag: string) => {
     const newSelectedTags = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag];
+      ? selectedTags.filter((t) => t !== tag) // 선택 해제
+      : [...selectedTags, tag]; // 새 태그 추가
 
-    if (newSelectedTags.length > 0) {
-      router.push(`${pathname}?tags=${newSelectedTags.join(',')}`);
-    } else {
-      router.push(pathname);
-    }
+    const newQueryString =
+      newSelectedTags.length > 0 ? `?tags=${newSelectedTags.join(',')}` : '';
+
+    router.push(`${pathname}${newQueryString}`);
   };
 
   return (
@@ -29,13 +33,14 @@ const TagFilter = ({ tags, selectedTags }: TagFilterProps) => {
         <button
           key={tag}
           onClick={() => handleTagClick(tag)}
-          className={`px-4 text-sm py-2 rounded-full transition-colors ${
+          className={`flex py-2 px-4 text-sm rounded-full transition-colors items-center gap-[4px] border-[1px] ${
             selectedTags.includes(tag)
-              ? 'bg-[var(--primary)] text-[var(--white)]'
-              : 'bg-[var(--gray)] text-[var(--gray-02)] hover:bg-gray-200 hover:text-[var(--primary)]'
+              ? 'bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] font-semibold border-[var(--primary)]'
+              : 'bg-[var(--gray)] text-[var(--black)] border-[var(--gray)] hover:bg-[var(--gray-01)] hover:text-[var(--primary)]'
           }`}
         >
           #{tag}
+          <X size={16} />
         </button>
       ))}
     </div>
