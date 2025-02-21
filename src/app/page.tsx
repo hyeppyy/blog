@@ -1,6 +1,4 @@
-import { LayoutGrid, List } from 'lucide-react';
-import PostCard from '@/components/PostCard';
-import TagFilter from '@/components/TagFilter';
+import PostList from '@/components/PostList';
 import { Post } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
@@ -15,31 +13,14 @@ const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
 
   const selectedTags = searchParams.tags ? searchParams.tags.split(',') : [];
 
-  const filteredPosts = allPosts.filter((post) =>
+  const filteredPosts =
     selectedTags.length === 0
-      ? true
-      : selectedTags.every((tag) => post.tags.includes(tag))
-  );
+      ? allPosts
+      : allPosts.filter((post) =>
+          post.tags?.some((tag) => selectedTags.includes(tag))
+        );
 
-  return (
-    <div>
-      <main className='pt-[72px] pb-[20px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
-        <TagFilter tags={allTags} selectedTags={selectedTags} />
-        <div className='flex justify-between'>
-          <span>posts(11)</span>
-          <div className='flex gap-[16px]'>
-            <List />
-            <LayoutGrid />
-          </div>
-        </div>
-        <ul>
-          {filteredPosts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </ul>
-      </main>
-    </div>
-  );
+  return <PostList allTags={allTags} filteredPosts={filteredPosts} />;
 };
 
 export default Home;

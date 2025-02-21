@@ -55,7 +55,7 @@ const ContentsNav = ({ headings, className = '' }: SimpleTocProps) => {
   if (!headings.length) return null;
 
   return (
-    <nav className={`px-[40px] rounded-lg  ${className}`}>
+    <nav className={`px-[20px] rounded-lg  ${className}`}>
       <h2 className='text-base font-semibold mb-3 text-[var(--black)]'>목차</h2>
       <ul className='space-y-1 text-sm'>
         {headings.map((heading) => (
@@ -67,7 +67,7 @@ const ContentsNav = ({ headings, className = '' }: SimpleTocProps) => {
               href={`${heading.id}`}
               onClick={handleClick(heading.id)}
               className={`block py-1 transition-colors 
-                ${activeId === heading.id ? 'text-[var(--primary)] font-medium' : 'text-[var(--gray-02)] hover:text-[var(--black)]'}
+                ${activeId === heading.id ? 'text-[var(--primary)] font-medium' : 'text-[var(--gray-02)] hover:text-[var(--black)] hover:font-semibold '}
                 ${heading.level > 1 ? 'text-[0.9em]' : 'font-medium'}
               `}
             >
