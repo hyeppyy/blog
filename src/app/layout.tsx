@@ -22,7 +22,7 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => (
   <html lang='ko'>
-    <body className={`${pretendard.variable} font-pretendard`}>
+    <body className={`${pretendard.variable} pt-[72px] font-pretendard`}>
       <Header />
       {children}
       <Footer />

@@ -40,7 +40,18 @@ const TagFilter = ({ tags = [] }: TagFilterProps) => {
           }`}
         >
           #{tag}
-          <X size={16} />
+          <div
+            className={`
+              transition-all duration-200 ease-in-out
+              ${
+                selectedTags.includes(tag)
+                  ? 'opacity-100 scale-100 ml-1'
+                  : 'opacity-0 scale-0 w-0 ml-0'
+              }
+            `}
+          >
+            <X size={16} />
+          </div>
         </button>
       ))}
     </div>
