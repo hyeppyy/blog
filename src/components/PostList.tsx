@@ -10,24 +10,22 @@ import ViewFilter from './ViewFilter';
 const PostList = ({
   allTags,
   filteredPosts,
-  showTags, // 태그 표시 여부를 제어하는 prop 추가
+  showTags,
 }: {
   allTags: string[];
   filteredPosts: Post[];
   showTags: boolean;
 }) => {
   const [viewType, setViewType] = useState<'list' | 'card'>('list');
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
-  const itemsPerPage = 5; // 한 페이지당 보여줄 아이템 수
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // 현재 페이지에 표시될 게시물 계산
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentPosts = filteredPosts.slice(indexOfFirstItem, indexOfLastItem);
 
-  // 3. 페이지 변경 처리 함수
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber); // 현재 페이지 업데이트
+    setCurrentPage(pageNumber);
   };
 
   useEffect(() => {
@@ -35,7 +33,7 @@ const PostList = ({
   }, [filteredPosts]);
 
   return (
-    <main className='pb-[48px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
+    <div className='pb-[48px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
       {showTags && <TagFilter tags={allTags} />}
       {showTags && (
         <div className='flex justify-between pb-[16px]'>
@@ -64,7 +62,7 @@ const PostList = ({
           onPageChange={handlePageChange}
         />
       )}
-    </main>
+    </div>
   );
 };
 

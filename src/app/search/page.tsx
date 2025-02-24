@@ -1,4 +1,3 @@
-// app/search/page.tsx
 import PostList from '@/components/PostList';
 import { Post } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
@@ -18,7 +17,6 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       post.content.toLowerCase().includes(query)
   );
 
-  // 모든 태그 추출
   const allTagsSet = new Set<string>();
   searchResults.forEach((post: Post) => {
     post.tags.forEach((tag) => allTagsSet.add(tag));
