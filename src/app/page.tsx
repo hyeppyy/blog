@@ -20,7 +20,9 @@ const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
           post.tags?.some((tag) => selectedTags.includes(tag))
         );
 
-  return <PostList allTags={allTags} filteredPosts={filteredPosts} />;
+  return (
+    <PostList allTags={allTags} filteredPosts={filteredPosts} showTags={true} />
+  );
 };
 
 export default Home;

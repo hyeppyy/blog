@@ -10,9 +10,11 @@ import ViewFilter from './ViewFilter';
 const PostList = ({
   allTags,
   filteredPosts,
+  showTags, // 태그 표시 여부를 제어하는 prop 추가
 }: {
   allTags: string[];
   filteredPosts: Post[];
+  showTags: boolean;
 }) => {
   const [viewType, setViewType] = useState<'list' | 'card'>('list');
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
@@ -33,14 +35,16 @@ const PostList = ({
   }, [filteredPosts]);
 
   return (
-    <main className='pt-[72px] pb-[48px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
-      <TagFilter tags={allTags} />
-      <div className='flex justify-between pb-[16px]'>
-        <span className='text-[var(--gray-02)]'>
-          게시글 ({filteredPosts.length})
-        </span>
-        <ViewFilter viewType={viewType} setViewType={setViewType} />
-      </div>
+    <main className='pb-[48px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
+      {showTags && <TagFilter tags={allTags} />}
+      {showTags && (
+        <div className='flex justify-between pb-[16px]'>
+          <span className='text-[var(--gray-02)]'>
+            게시글 ({filteredPosts.length})
+          </span>
+          <ViewFilter viewType={viewType} setViewType={setViewType} />
+        </div>
+      )}
       <ul
         className={
           viewType === 'card'

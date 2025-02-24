@@ -32,7 +32,7 @@ const page = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <>
-      <main className='flex flex-col pt-[72px] pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[180px]'>
+      <main className='flex flex-col pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[180px]'>
         <span className='text-5xl font-semibold pb-[48px] text-[var(--black)]'>
           {post.title}
         </span>
