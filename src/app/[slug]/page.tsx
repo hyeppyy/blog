@@ -2,21 +2,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ContentsNav from '@/components/ContentsNav';
 import Giscus from '@/components/Giscus';
+import TagButton from '@/components/TagButton';
 import extractTableOfContents from '@/utils/contents';
 import { getPost } from '@/utils/posts';
 
-const page = async ({ params }: { params: { slug: string } }) => {
+const DetailPage = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
   const post = await getPost(slug);
   const toc = await extractTableOfContents(post.content);
 
-  // 계층 구조를 평면 배열로 변환
   const flattenedHeadings = toc.flatMap((item) => {
     const result = [item];
     if (item.children) {
       result.push(...item.children);
 
-      // 3단계 헤딩이 있는 경우
       item.children.forEach((child) => {
         if (child.children) {
           result.push(...child.children);
@@ -32,30 +31,25 @@ const page = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <>
-      <main className='flex flex-col pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[180px]'>
-        <span className='text-5xl font-semibold pb-[48px] text-[var(--black)]'>
+      <div className='flex flex-col pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[180px]'>
+        <span className='text-4xl md:text-5xl font-semibold pb-[48px] text-[var(--black)]'>
           {post.title}
         </span>
         <span className='pb-[12px] text-[var(--gray-02)]'>{post.date}</span>
         <div className='flex pb-[48px] gap-[12px]'>
           {post.tags.map((tag: any) => (
-            <button
-              key={tag}
-              className=' px-4 text-sm py-2 rounded-full text-[var(--primary)] bg-[var(--gray)]'
-            >
-              {tag}
-            </button>
+            <TagButton key={tag} tag={tag} />
           ))}
         </div>
         {post.thumbnail && (
-          <div className='relative w-full h-[300px] sm:h-[300px] md:h-[400px]'>
+          <figure className='relative w-full aspect-[16/9]'>
             <Image
               src={post.thumbnail}
               alt='썸네일 이미지'
               className='rounded-3xl object-cover'
               fill
             />
-          </div>
+          </figure>
         )}
         <div
           className='prose max-w-none pt-[64px] dark:prose-invert'
@@ -69,7 +63,7 @@ const page = async ({ params }: { params: { slug: string } }) => {
           </Link>
         </div>
         <Giscus />
-      </main>
+      </div>
       <ContentsNav
         headings={flattenedHeadings}
         className='fixed max-w-[300px] min-w-[230px] top-[80px] right-[20px] z-10 hidden xl:block'
@@ -78,4 +72,4 @@ const page = async ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default page;
+export default DetailPage;

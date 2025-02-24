@@ -27,7 +27,7 @@ const PostCard = ({ post, options = 'list' }: PostCardProps) => (
         <Image
           src={post.thumbnail || '/images/default-thumbnail.png'}
           alt='썸네일 이미지'
-          className='rounded-3xl w-[124px] h-[86px] sm:h-[150px] md:w-[264px]'
+          className='rounded-3xl w-[124px] h-[86px] sm:w-[150px] sm:h-[100px] md:w-[264px] md:h-[150px]'
           width={264}
           height={150}
         />

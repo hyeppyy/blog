@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
+import LayoutClient from '@/components/LayoutClient';
+import { getAllPosts } from '@/utils/posts';
 
 export const metadata: Metadata = {
   title: "heyppyy's blog",
@@ -16,18 +16,25 @@ const pretendard = localFont({
   variable: '--font-pretendard',
 });
 
-const RootLayout = ({
+const RootLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) => (
-  <html lang='ko'>
-    <body className={`${pretendard.variable} pt-[72px] font-pretendard`}>
-      <Header />
-      {children}
-      <Footer />
-    </body>
-  </html>
-);
+}>) => {
+  const allPosts = await getAllPosts();
+  const allTagsSet = new Set<string>();
+  allPosts.forEach((post) => {
+    post.tags.forEach((tag) => allTagsSet.add(tag));
+  });
+  const allTags = Array.from(allTagsSet);
+
+  return (
+    <html lang='ko'>
+      <body className={`${pretendard.variable} font-pretendard`}>
+        <LayoutClient allTags={allTags}>{children} </LayoutClient>
+      </body>
+    </html>
+  );
+};
 
 export default RootLayout;

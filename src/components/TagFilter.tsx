@@ -28,7 +28,7 @@ const TagFilter = ({ tags = [] }: TagFilterProps) => {
   };
 
   return (
-    <div className='flex flex-wrap gap-2 pt-[20px] pb-[40px]'>
+    <div className='hidden sm:flex flex-wrap gap-2 pt-[20px] pb-[40px]'>
       {tags.map((tag) => (
         <button
           key={tag}

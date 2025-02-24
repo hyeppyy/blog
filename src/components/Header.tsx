@@ -1,11 +1,15 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Github, Search } from 'lucide-react';
+import { Github, Search, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const Header = () => {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+const Header = ({ onMenuClick }: HeaderProps) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -15,7 +19,6 @@ const Header = () => {
 
     if (!searchQuery.trim()) return;
 
-    // 검색 페이지로 이동
     router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
     setSearchQuery(''); // 검색 후 입력창 초기화
   };
@@ -41,13 +44,14 @@ const Header = () => {
             <Image
               src='/images/hyeppyLog.png'
               alt='logo'
+              className='w-[80px] h-[24px] md:w-[110px] md:h-[33px]'
               width={110}
               height={33}
               priority
             />
           </Link>
         </div>
-        <div className='flex gap-[8px]'>
+        <div className='flex gap-[8px] items-center'>
           {/* TODO: 추후 추가 예정 */}
           {/* <span className='p-[4px] hover:text-[var(--primary)] transition-all duration-300 cursor-pointer'>
             portfolio
@@ -83,6 +87,12 @@ const Header = () => {
               </button>
             </div>
           </form>
+          <button
+            onClick={onMenuClick}
+            className='flex sm:hidden hover:text-[var(--primary)] transition-all duration-300 cursor-pointer'
+          >
+            <Menu />
+          </button>
         </div>
       </section>
     </header>
