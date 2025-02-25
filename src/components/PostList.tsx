@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Post } from '@/types/post';
+import { PostProps } from '@/types/post';
 import Pagination from './Pagination';
 import PostCard from './PostCard';
 import TagFilter from './TagFilter';
@@ -13,7 +13,7 @@ const PostList = ({
   showTags,
 }: {
   allTags: string[];
-  filteredPosts: Post[];
+  filteredPosts: PostProps[];
   showTags: boolean;
 }) => {
   const [viewType, setViewType] = useState<'list' | 'card'>('list');
@@ -24,7 +24,7 @@ const PostList = ({
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentPosts = filteredPosts.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handlePageChange = (pageNumber) => {
+  const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
@@ -37,7 +37,7 @@ const PostList = ({
       {showTags && <TagFilter tags={allTags} />}
       {showTags && (
         <div className='flex justify-between pb-[16px]'>
-          <span className='text-[var(--gray-02)]'>
+          <span className='text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
             게시글 ({filteredPosts.length})
           </span>
           <ViewFilter viewType={viewType} setViewType={setViewType} />

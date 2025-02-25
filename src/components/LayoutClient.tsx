@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import Footer from './Footer';
+import Header from './Header';
+import Sidebar from './Sidebar';
 
 interface LayoutClientProps {
   children: React.ReactNode;
@@ -13,7 +13,6 @@ interface LayoutClientProps {
 const LayoutClient = ({ children, allTags }: LayoutClientProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // 사이드바가 열려있을 때 스크롤 방지
   useEffect(() => {
     if (isSidebarOpen) {
       document.body.style.overflow = 'hidden';
@@ -44,7 +43,9 @@ const LayoutClient = ({ children, allTags }: LayoutClientProps) => {
         allTags={allTags}
         onClose={toggleSidebar}
       />
-      <main className='pt-[72px]'>{children}</main>
+      <main className='pt-[72px] min-h-screen dark:bg-[var(--background-dark)]'>
+        {children}
+      </main>
       <Footer />
     </>
   );

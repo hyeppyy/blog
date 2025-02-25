@@ -6,25 +6,24 @@ export default {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
         pretendard: ['var(--font-pretendard)'],
       },
       colors: {
-        light: {
-          background: 'var(--white)',
-          text: 'var(--black)',
-          primary: 'var(--primary)',
-          secondary: 'var(--secondary)',
-          gray01: 'var(--gray-01)',
+        primary: {
+          light: 'var(--primary)',
+          dark: 'var(--primary-dark)',
         },
-        dark: {
-          background: 'var(--background-dark)',
-          text: 'var(--white)',
-          primary: 'var(--primary-dark)',
-          secondary: 'var(--secondary)',
-          gray01: 'var(--gray-01)',
+        background: {
+          light: 'var(--white)',
+          dark: 'var(--background-dark)',
+        },
+        text: {
+          light: 'var(--black)',
+          dark: 'var(--white)',
         },
       },
     },
