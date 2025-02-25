@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTheme } from './ThemeProvider';
 
 const Giscus = () => {
+  const { isDarkMode } = useTheme();
   const ref = useRef<HTMLDivElement>(null);
-  const theme = 'light';
+  const theme = isDarkMode ? 'noborder_dark' : 'light';
 
   useEffect(() => {
     if (!ref.current || ref.current.hasChildNodes()) return;
@@ -38,7 +40,7 @@ const Giscus = () => {
 
   return (
     <section
-      className='border-t border-t-[var(--gray-01)] pt-[40px] mt-[80px]'
+      className='border-t border-t-[var(--gray-01)] dark:border-t-[var(--gray-03-dark)] pt-[40px] mt-[80px]'
       ref={ref}
     />
   );

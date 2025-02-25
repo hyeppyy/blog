@@ -4,6 +4,8 @@ import { Github, Search, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTheme } from './ThemeProvider';
+import ThemeToggleButton from './ThemeToggleButton';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -11,6 +13,7 @@ interface HeaderProps {
 
 const Header = ({ onMenuClick }: HeaderProps) => {
   const router = useRouter();
+  const { isDarkMode } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [hasScrolled, setHasScrolled] = useState(false);
 
@@ -20,7 +23,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
     if (!searchQuery.trim()) return;
 
     router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
-    setSearchQuery(''); // 검색 후 입력창 초기화
+    setSearchQuery('');
   };
 
   useEffect(() => {
@@ -34,7 +37,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
 
   return (
     <header
-      className={`z-50 flex items-center pt-[0px] pr-[20px] pb-[0px] pl-[20px] h-[56px] fixed top-0 left-0 right-0 bg-white/60 backdrop-blur-md z-50 transition-shadow ${
+      className={`z-50 flex items-center pt-[0px] pr-[20px] pb-[0px] pl-[20px] h-[56px] fixed top-0 left-0 right-0 bg-white/60 backdrop-blur-md z-50 transition-shadow dark:bg-[var(--background-dark)] ${
         hasScrolled ? 'shadow-md' : ''
       }`}
     >
@@ -42,7 +45,11 @@ const Header = ({ onMenuClick }: HeaderProps) => {
         <div className='relative'>
           <Link href={'/'}>
             <Image
-              src='/images/hyeppyLog.png'
+              src={
+                isDarkMode
+                  ? '/images/hyeppyLog_dark.png'
+                  : '/images/hyeppyLog.png'
+              }
               alt='logo'
               className='w-[80px] h-[24px] md:w-[110px] md:h-[33px]'
               width={110}
@@ -56,8 +63,9 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           {/* <span className='p-[4px] hover:text-[var(--primary)] transition-all duration-300 cursor-pointer'>
             portfolio
           </span> */}
+          <ThemeToggleButton className='hidden sm:flex' />
           <Link
-            className='flex items-center p-[4px] hover:text-[var(--primary)] transition-all duration-300'
+            className='hidden sm:flex items-center p-[4px] text-sm text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] hover:dark:text-[var(--primary-dark)] transition-all duration-300'
             href='https://github.com/hyeppyy'
             target='_blank'
             rel='noopener noreferrer'
@@ -74,13 +82,13 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder='제목, 내용'
-                className='w-full px-4 py-2 pr-10 rounded-full border-[1.5px] border-[var(--gray-01)] 
-                      focus:outline-none focus:border-[var(--primary)] transition-colors
+                className='w-full px-4 py-2 pr-10 dark:bg-transparent rounded-full border-[1.5px] border-[var(--gray-01)] dark:border-[var(--gray-03-dark)] dark:text-[var(--gray-02-dark)]
+                      focus:outline-none focus:border-[var(--primary)] dark:focus:border-[var(--primary-dark)] transition-colors
                       text-sm'
               />
               <button
                 type='submit'
-                className='absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray-03)] 
+                className='absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray-03)] dark:text-[var(--gray-02-dark)] 
                       hover:text-[var(--primary)] transition-colors'
               >
                 <Search size={18} />
@@ -89,7 +97,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           </form>
           <button
             onClick={onMenuClick}
-            className='flex sm:hidden hover:text-[var(--primary)] transition-all duration-300 cursor-pointer'
+            className='flex sm:hidden hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)] dark:text-[var(--gray-01-dark)] transition-all duration-300 cursor-pointer'
           >
             <Menu />
           </button>

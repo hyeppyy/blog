@@ -34,7 +34,7 @@ const Pagination = ({
       {startPage !== currentPage && (
         <button
           onClick={() => onPageChange(1)}
-          className='px-3 py-1 rounded-full text-[var(--gray-02)] hover:text-[var(--primary)]'
+          className='px-3 py-1 rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronsLeft />
         </button>
@@ -43,7 +43,7 @@ const Pagination = ({
       {startPage !== currentPage && (
         <button
           onClick={() => onPageChange(currentPage - 1)}
-          className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] hover:text-[var(--primary)]'
+          className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronLeft />
         </button>
@@ -53,7 +53,7 @@ const Pagination = ({
         <button
           key={number}
           onClick={() => onPageChange(number)}
-          className={`w-[32px] h-[32px] px-3 py-1 rounded-full ${currentPage === number ? 'bg-[var(--primary)] text-white' : 'hover:bg-[var(--gray-01)]'}`}
+          className={`w-[32px] h-[32px] px-3 py-1 rounded-full ${currentPage === number ? 'bg-[var(--primary)] dark:bg-[var(--primary-dark)] text-white dark:text-[var(--black-dark)]' : 'dark:text-[var(--gray-01-dark)] hover:bg-[var(--gray-01)] hover:dark:bg-[rgba(var(--white-rgb),0.15)]'}`}
         >
           {number}
         </button>
@@ -62,7 +62,7 @@ const Pagination = ({
       {endPage !== currentPage && (
         <button
           onClick={() => onPageChange(currentPage + 1)}
-          className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] hover:text-[var(--primary)]'
+          className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronRight />
         </button>
@@ -71,7 +71,7 @@ const Pagination = ({
       {endPage !== currentPage && (
         <button
           onClick={() => onPageChange(totalPages)}
-          className='px-3 py-1 rounded-full text-[var(--gray-02)] hover:text-[var(--primary)]'
+          className='px-3 py-1 rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronsRight />
         </button>

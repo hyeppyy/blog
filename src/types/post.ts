@@ -1,4 +1,4 @@
-export interface Post {
+export interface PostProps {
   slug: string;
   title: string;
   date: string;

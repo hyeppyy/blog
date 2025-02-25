@@ -18,8 +18,8 @@ const TagFilter = ({ tags = [] }: TagFilterProps) => {
 
   const handleTagClick = (tag: string) => {
     const newSelectedTags = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag) // 선택 해제
-      : [...selectedTags, tag]; // 새 태그 추가
+      ? selectedTags.filter((t) => t !== tag)
+      : [...selectedTags, tag];
 
     const newQueryString =
       newSelectedTags.length > 0 ? `?tags=${newSelectedTags.join(',')}` : '';
@@ -33,10 +33,10 @@ const TagFilter = ({ tags = [] }: TagFilterProps) => {
         <button
           key={tag}
           onClick={() => handleTagClick(tag)}
-          className={`flex py-2 px-4 text-sm rounded-full transition-colors items-center gap-[4px] border-[1px] ${
+          className={`flex py-2 px-4 text-sm rounded-full transition-colors items-center gap-[4px] border-[1px] dark:border-transparent ${
             selectedTags.includes(tag)
-              ? 'bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] font-semibold border-[var(--primary)]'
-              : 'bg-[var(--gray)] text-[var(--black)] border-[var(--gray)] hover:bg-[var(--gray-01)] hover:text-[var(--primary)]'
+              ? 'bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] dark:text-[var(--primary-dark)] font-semibold border-[var(--primary)]'
+              : 'bg-[var(--gray)] dark:bg-[rgba(var(--white-rgb),0.15)] text-[var(--black)] dark:text-[var(--black-dark)] border-[var(--gray)] hover:bg-[var(--gray-01)] hover:text-[var(--primary)]'
           }`}
         >
           #{tag}

@@ -8,16 +8,27 @@
   --secondary: #002952;
   --black: #2b2b2b;
   --white: #ffffff;
+  --white-rgb: 255, 255, 255;
   --gray: #f8f8f8;
   --gray-01: #ebebeb;
   --gray-02: #585858;
 
-  --background-dark: #1a1a1a;
-  --primary-dark: #ffcde1;
+  --background-dark: #212121;
+  --primary-dark: #ffa0c5;
+  --black-dark: #ffffff;
+  --gray-dark: #ededed;
+  --gray-01-dark: #d1d1d1;
+  --gray-02-dark: #aaaaaa;
+  --gray-03-dark: #5c5c5c;
+  --gray-04-dark: #343434;
 }
 
 @layer base {
   ::selection {
-    background-color: #ffcde1;
+    @apply bg-[#ffcde1];
+  }
+
+  .dark ::selection {
+    @apply bg-[#ffa0c5] text-white;
   }
 }

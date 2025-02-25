@@ -32,12 +32,14 @@ const DetailPage = async ({ params }: { params: { slug: string } }) => {
   return (
     <>
       <div className='flex flex-col pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[180px]'>
-        <span className='text-4xl md:text-5xl font-semibold pb-[48px] text-[var(--black)]'>
+        <span className='text-4xl md:text-5xl font-semibold pb-[48px] text-[var(--black)] dark:text-[var(--gray-dark)]'>
           {post.title}
         </span>
-        <span className='pb-[12px] text-[var(--gray-02)]'>{post.date}</span>
+        <span className='pb-[12px] text-[var(--gray-02)] dark:text-[var(--gray-02-dark)]'>
+          {post.date}
+        </span>
         <div className='flex pb-[48px] gap-[12px]'>
-          {post.tags.map((tag: any) => (
+          {post.tags.map((tag: string) => (
             <TagButton key={tag} tag={tag} />
           ))}
         </div>
@@ -57,7 +59,7 @@ const DetailPage = async ({ params }: { params: { slug: string } }) => {
         />
         <div className='w-full flex justify-end mt-[32px]'>
           <Link href='/'>
-            <button className='w-fit px-[12px] py-[8px] rounded-lg border border-[var(--gray-02)] text-[var(--gray-02)] hover:text-[var(--primary)]'>
+            <button className='text-sm w-fit px-[12px] py-[8px] rounded-lg border border-[var(--gray-02)] dark:border-[var(--gray-03-dark)] text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'>
               목록으로
             </button>
           </Link>
