@@ -15,13 +15,13 @@ const Giscus = () => {
     scriptElem.async = true;
     scriptElem.setAttribute('data-repo', 'hyeppyy/blog');
     scriptElem.setAttribute('data-repo-id', 'R_kgDON6ulVQ');
-    scriptElem.setAttribute('data-category', 'Comments');
+    scriptElem.setAttribute('data-category', 'General');
     scriptElem.setAttribute('data-category-id', 'DIC_kwDON6ulVc4CnGax');
     scriptElem.setAttribute('data-mapping', 'pathname');
     scriptElem.setAttribute('data-strict', '0');
     scriptElem.setAttribute('data-reactions-enabled', '0');
     scriptElem.setAttribute('data-emit-metadata', '0');
-    scriptElem.setAttribute('data-input-position', 'bottom');
+    scriptElem.setAttribute('data-input-position', 'top');
     scriptElem.setAttribute('data-theme', theme);
     scriptElem.setAttribute('data-lang', 'ko');
     scriptElem.setAttribute('crossorigin', 'anonymous');
