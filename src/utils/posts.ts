@@ -12,11 +12,6 @@ import { unified } from 'unified';
 const postsDirectory = path.join(process.cwd(), 'posts');
 
 export async function getAllPosts() {
-  if (!fs.existsSync(postsDirectory)) {
-    fs.mkdirSync(postsDirectory, { recursive: true });
-    return [];
-  }
-
   const fileNames = fs.readdirSync(postsDirectory);
   const allPosts = fileNames.map((fileName) => {
     const slug = fileName.replace(/\.md$/, '');
