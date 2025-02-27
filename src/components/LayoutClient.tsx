@@ -33,10 +33,7 @@ const LayoutClient = ({ children, allTags }: LayoutClientProps) => {
     <>
       <Header onMenuClick={toggleSidebar} />
       {isSidebarOpen && (
-        <div
-          className='fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden'
-          onClick={toggleSidebar}
-        />
+        <div className='fixed inset-0 z-40 lg:hidden' onClick={toggleSidebar} />
       )}
       <Sidebar
         isOpen={isSidebarOpen}

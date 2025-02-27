@@ -13,14 +13,14 @@
   --gray-01: #ebebeb;
   --gray-02: #585858;
 
-  --background-dark: #212121;
+  --background-dark: #1d1d1d;
   --primary-dark: #ffa0c5;
   --black-dark: #ffffff;
   --gray-dark: #ededed;
   --gray-01-dark: #d1d1d1;
   --gray-02-dark: #aaaaaa;
   --gray-03-dark: #5c5c5c;
-  --gray-04-dark: #343434;
+  --gray-04-dark: #2c2c2c;
 }
 
 @layer base {

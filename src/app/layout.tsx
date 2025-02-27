@@ -31,7 +31,9 @@ const RootLayout = async ({
 
   return (
     <html lang='ko'>
-      <body className={`${pretendard.variable} font-pretendard`}>
+      <body
+        className={`${pretendard.variable} font-pretendard overflow-scroll`}
+      >
         <ThemeProvider>
           <LayoutClient allTags={allTags}>{children} </LayoutClient>
         </ThemeProvider>
