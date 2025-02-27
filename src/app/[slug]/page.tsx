@@ -11,6 +11,11 @@ type tParams = Promise<{ slug: string }>;
 const DetailPage = async ({ params }: { params: tParams }) => {
   const { slug } = await params;
   const post = await getPost(slug);
+
+  if (!post) {
+    return <div>포스트를 찾을 수 없습니다</div>;
+  }
+
   const toc = await extractTableOfContents(post.content);
 
   const flattenedHeadings = toc.flatMap((item) => {
@@ -26,10 +31,6 @@ const DetailPage = async ({ params }: { params: tParams }) => {
     }
     return result;
   });
-
-  if (!post) {
-    return <div>포스트를 찾을 수 없습니다</div>;
-  }
 
   return (
     <>
@@ -52,6 +53,7 @@ const DetailPage = async ({ params }: { params: tParams }) => {
               alt='썸네일 이미지'
               className='rounded-3xl object-cover'
               fill
+              priority
             />
           </figure>
         )}
