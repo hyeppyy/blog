@@ -7,9 +7,21 @@ interface SearchPageProps {
 }
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
-  const resolvedSearchParams = await searchParams;
-  const query = resolvedSearchParams.query?.toLowerCase() || '';
+  const resolvedParams = await searchParams;
+  const query = resolvedParams.query?.toLowerCase() || '';
   const allPosts = await getAllPosts();
+
+  if (!allPosts || allPosts.length === 0) {
+    return <p>데이터를 조회중입니다..</p>;
+  }
+
+  if (!query) {
+    return (
+      <div className='pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
+        <p>검색어를 입력해주세요.</p>
+      </div>
+    );
+  }
 
   const searchResults = allPosts.filter(
     (post: PostProps) =>
@@ -17,18 +29,24 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       post.content.toLowerCase().includes(query)
   );
 
-  const allTagsSet = new Set<string>();
-  searchResults.forEach((post: PostProps) => {
-    post.tags.forEach((tag: string) => allTagsSet.add(tag));
-  });
-  const allTags = Array.from(allTagsSet);
+  const allTags = [
+    ...new Set(searchResults.flatMap((post) => post.tags || [])),
+  ];
+
+  if (searchResults.length === 0) {
+    return (
+      <div className='pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
+        <p>'{resolvedParams.query}'에 대한 검색 결과가 없습니다.</p>
+      </div>
+    );
+  }
 
   return (
     <>
       <div className='pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
         <span className='text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] text-2xl'>
           <span className='text-[var(--primary)] dark:text-[var(--primary-dark)]'>
-            '{resolvedSearchParams.query}'
+            '{resolvedParams.query}'
           </span>
           에 대한 검색 결과 ({searchResults.length}건)
         </span>

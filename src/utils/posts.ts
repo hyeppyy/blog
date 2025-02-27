@@ -8,39 +8,41 @@ import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+import { PostProps } from '@/types/post';
 
-const postsDirectory = path.join(process.cwd(), 'posts');
+const postsDirectory = path.join(process.cwd(), 'public', 'posts');
 
-export async function getAllPosts() {
-  if (!fs.existsSync(postsDirectory)) {
-    fs.mkdirSync(postsDirectory, { recursive: true });
-    return [];
-  }
+export const getAllPosts = (): PostProps[] => {
+  const postFolders = fs.readdirSync(postsDirectory);
+  const allPosts = postFolders
+    .filter((folderName) => {
+      const filePath = path.join(postsDirectory, folderName, 'index.md');
+      return fs.existsSync(filePath);
+    })
+    .map((folderName) => {
+      const filePath = path.join(postsDirectory, folderName, 'index.md');
+      const fileContents = fs.readFileSync(filePath, 'utf8');
+      const { data } = matter(fileContents);
 
-  const fileNames = fs.readdirSync(postsDirectory);
-  const allPosts = fileNames.map((fileName) => {
-    const slug = fileName.replace(/\.md$/, '');
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-    const { data, content } = matter(fileContents);
-
-    return {
-      slug,
-      title: data.title,
-      description: data.description,
-      date: data.date,
-      tags: data.tags || [],
-      content,
-      thumbnail: data.thumbnail || null,
-    };
-  });
+      return {
+        slug: folderName,
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        tags: data.tags || [],
+        content: fileContents,
+        thumbnail: data.thumbnail || null,
+      };
+    });
 
   return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
-}
+};
 
-export async function getPost(slug: string) {
-  const fullPath = path.join(postsDirectory, `${slug}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
+export const getPost = async (slug: string): Promise<PostProps> => {
+  const postDir = path.join(postsDirectory, slug);
+  const filePath = path.join(postDir, 'index.md');
+
+  const fileContents = await fs.promises.readFile(filePath, 'utf8');
   const { data, content } = matter(fileContents);
 
   const contentHtml = await unified()
@@ -62,4 +64,4 @@ export async function getPost(slug: string) {
     content: contentHtml,
     thumbnail: data.thumbnail || null,
   };
-}
+};
