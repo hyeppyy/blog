@@ -8,11 +8,11 @@ import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+import { PostProps } from '@/types/post';
 
 const postsDirectory = path.join(process.cwd(), 'public', 'posts');
 
-export async function getAllPosts() {
-  // const fileNames = fs.readdirSync(postsDirectory);
+export const getAllPosts = (): PostProps[] => {
   const postFolders = fs.readdirSync(postsDirectory);
   const allPosts = postFolders
     .filter((folderName) => {
@@ -36,9 +36,9 @@ export async function getAllPosts() {
     });
 
   return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
-}
+};
 
-export async function getPost(slug: string) {
+export const getPost = async (slug: string): Promise<PostProps> => {
   const postDir = path.join(postsDirectory, slug);
   const filePath = path.join(postDir, 'index.md');
 
@@ -64,4 +64,4 @@ export async function getPost(slug: string) {
     content: contentHtml,
     thumbnail: data.thumbnail || null,
   };
-}
+};
