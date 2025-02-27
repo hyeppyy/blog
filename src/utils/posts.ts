@@ -9,7 +9,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 
-const postsDirectory = path.join(process.cwd(), 'posts');
+const postsDirectory = path.join(process.cwd(), 'public/posts');
 
 export async function getAllPosts() {
   const fileNames = fs.readdirSync(postsDirectory);
