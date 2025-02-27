@@ -30,17 +30,18 @@ const PostCard = ({ post, options = 'list' }: PostCardProps) => (
           className='rounded-3xl w-[124px] h-[86px] sm:w-[150px] sm:h-[100px] md:w-[264px] md:h-[150px]'
           width={264}
           height={150}
+          priority
         />
       </li>
     ) : (
-      <div className='flex flex-col min-h-full border rounded-lg shadow-md overflow-hidden transition hover:shadow-lg dark:bg-[var(--gray-04-dark)] dark:border-transparent'>
+      <div className='relative flex flex-col min-h-full border rounded-lg shadow-md overflow-hidden transition hover:shadow-lg dark:bg-[var(--gray-04-dark)] dark:border-transparent'>
         <Image
           src={post.thumbnail || '/images/default-thumbnail.png'}
           alt='썸네일 이미지'
           className='w-full object-cover'
-          layout='responsive'
           width={400}
           height={200}
+          priority
         />
         <div className='p-4'>
           <span className='text-2xl leading-[2rem] md:leading-[1.5em] font-semibold dark:text-[var(--black-dark)] dark:text-[var(--gray-dark)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary-dark)] transition'>

@@ -23,6 +23,7 @@ const RootLayout = async ({
   children: React.ReactNode;
 }>) => {
   const allPosts = await getAllPosts();
+
   const allTagsSet = new Set<string>();
   allPosts.forEach((post) => {
     post.tags.forEach((tag: string) => allTagsSet.add(tag));
