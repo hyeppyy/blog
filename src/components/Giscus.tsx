@@ -26,7 +26,7 @@ const Giscus = () => {
     scriptElem.setAttribute('data-lang', 'ko');
     scriptElem.setAttribute('crossorigin', 'anonymous');
     ref.current.appendChild(scriptElem);
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     const iframe = document.querySelector<HTMLIFrameElement>(
