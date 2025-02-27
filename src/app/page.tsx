@@ -1,12 +1,12 @@
 import PostList from '@/components/PostList';
-import { Post } from '@/types/post';
+import { PostProps } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
 const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
   const allPosts = await getAllPosts();
 
   const allTagsSet = new Set<string>();
-  allPosts.forEach((post: Post) => {
+  allPosts.forEach((post: PostProps) => {
     post.tags.forEach((tag) => allTagsSet.add(tag));
   });
   const allTags = Array.from(allTagsSet);
@@ -17,7 +17,7 @@ const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
     selectedTags.length === 0
       ? allPosts
       : allPosts.filter((post) =>
-          post.tags?.some((tag) => selectedTags.includes(tag))
+          post.tags?.some((tag: string) => selectedTags.includes(tag))
         );
 
   return (

@@ -43,17 +43,23 @@ const PostList = ({
           <ViewFilter viewType={viewType} setViewType={setViewType} />
         </div>
       )}
-      <ul
-        className={
-          viewType === 'card'
-            ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[32px] pt-[32px]'
-            : ''
-        }
-      >
-        {currentPosts.map((post) => (
-          <PostCard key={post.slug} post={post} options={viewType} />
-        ))}
-      </ul>
+      {filteredPosts.length > 0 ? (
+        <ul
+          className={
+            viewType === 'card'
+              ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[32px] pt-[32px]'
+              : ''
+          }
+        >
+          {currentPosts.map((post) => (
+            <PostCard key={post.slug} post={post} options={viewType} />
+          ))}
+        </ul>
+      ) : (
+        <span className='flex justify-center py-[64px] w-full dark:text-[var(--gray-01-dark)]'>
+          등록된 게시글이 없습니다.
+        </span>
+      )}
       {filteredPosts.length > 5 && (
         <Pagination
           totalItems={filteredPosts.length}

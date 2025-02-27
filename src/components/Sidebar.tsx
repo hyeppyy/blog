@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { X, Github } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -18,6 +19,17 @@ const Sidebar = ({ allTags, isOpen, onClose }: SidebarProps) => {
     router.push(`/?tags=${tag}`);
     onClose();
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 640) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [onClose]);
 
   return (
     <aside
