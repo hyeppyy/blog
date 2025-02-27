@@ -6,8 +6,10 @@ import TagButton from '@/components/TagButton';
 import extractTableOfContents from '@/utils/contents';
 import { getPost } from '@/utils/posts';
 
-const DetailPage = async ({ params }: { params: { slug: string } }) => {
-  const { slug } = params;
+type tParams = Promise<{ slug: string }>;
+
+const DetailPage = async ({ params }: { params: tParams }) => {
+  const { slug } = await params;
   const post = await getPost(slug);
   const toc = await extractTableOfContents(post.content);
 

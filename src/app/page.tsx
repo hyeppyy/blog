@@ -2,7 +2,10 @@ import PostList from '@/components/PostList';
 import { PostProps } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
-const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
+type tSearchParams = Promise<{ tags?: string }>;
+
+const Home = async ({ searchParams }: { searchParams: tSearchParams }) => {
+  const resolvedSearchParams = await searchParams;
   const allPosts = await getAllPosts();
 
   const allTagsSet = new Set<string>();
@@ -11,7 +14,9 @@ const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
   });
   const allTags = Array.from(allTagsSet);
 
-  const selectedTags = searchParams.tags ? searchParams.tags.split(',') : [];
+  const selectedTags = resolvedSearchParams.tags
+    ? resolvedSearchParams.tags.split(',')
+    : [];
 
   const filteredPosts =
     selectedTags.length === 0
