@@ -28,7 +28,7 @@ const LayoutClient = ({ children, allTags }: LayoutClientProps) => {
         allTags={allTags}
         onClose={toggleSidebar}
       />
-      <main className='pt-[72px] min-h-screen dark:bg-[var(--background-dark)]'>
+      <main className='pt-[72px] min-h-screen dark:bg-[var(--background-dark)] overflow-x-hidden'>
         {children}
       </main>
       <Footer />
