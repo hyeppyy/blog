@@ -6,8 +6,18 @@ import ThemeProvider from '@/components/ThemeProvider';
 import { getAllPosts } from '@/utils/posts';
 
 export const metadata: Metadata = {
-  title: "heyppyy's blog",
-  description: "heyppyy's frontend blog project",
+  title: "hyeppyy's blog",
+  description: '개인 기술 블로그',
+  openGraph: {
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'img',
+      },
+    ],
+  },
 };
 
 const pretendard = localFont({
@@ -32,9 +42,7 @@ const RootLayout = async ({
 
   return (
     <html lang='ko'>
-      <body
-        className={`${pretendard.variable} font-pretendard overflow-scroll`}
-      >
+      <body className={`${pretendard.variable} font-pretendard`}>
         <ThemeProvider>
           <LayoutClient allTags={allTags}>{children} </LayoutClient>
         </ThemeProvider>

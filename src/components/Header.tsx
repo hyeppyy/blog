@@ -41,7 +41,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
         hasScrolled ? 'shadow-md' : ''
       }`}
     >
-      <section className='max-w-[1200px] w-full m-0 mx-auto flex items-center justify-between'>
+      <section className='max-w-[1200px] w-full m-0 mx-auto flex items-center justify-between gap-[8px]'>
         <div className='relative'>
           <Link href={'/'}>
             <Image
@@ -51,7 +51,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                   : '/images/hyeppyLog.png'
               }
               alt='logo'
-              className='w-[80px] h-[24px] md:w-[110px] md:h-[33px]'
+              className='w-[80px] h-auto md:w-[110px] md:h-[33px]'
               width={110}
               height={33}
               priority

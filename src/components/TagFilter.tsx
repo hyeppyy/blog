@@ -13,7 +13,6 @@ const TagFilter = ({ tags = [] }: TagFilterProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // URL에서 tags 파라미터 가져오기
   const selectedTags = searchParams.get('tags')?.split(',') || [];
 
   const handleTagClick = (tag: string) => {
@@ -28,7 +27,7 @@ const TagFilter = ({ tags = [] }: TagFilterProps) => {
   };
 
   return (
-    <div className='hidden sm:flex flex-wrap gap-2 pt-[32px] pb-[64px]'>
+    <div className='hidden sm:flex flex-wrap gap-[8px] pt-[32px] pb-[64px]'>
       {tags.map((tag) => (
         <button
           key={tag}
