@@ -7,7 +7,17 @@ import { getAllPosts } from '@/utils/posts';
 
 export const metadata: Metadata = {
   title: "hyeppyy's blog",
-  description: "hyeppyy's frontend blog project",
+  description: '개인 기술 블로그',
+  openGraph: {
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'img',
+      },
+    ],
+  },
 };
 
 const pretendard = localFont({
