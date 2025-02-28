@@ -23,11 +23,17 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     );
   }
 
-  const searchResults = allPosts.filter(
-    (post: PostProps) =>
+  const searchResults = allPosts.filter((post: PostProps) => {
+    const contentParts = post.content.split('---');
+    const cleanContent =
+      contentParts.length > 2 ? contentParts.slice(2).join('---').trim() : '';
+
+    return (
       post.title.toLowerCase().includes(query) ||
-      post.content.toLowerCase().includes(query)
-  );
+      cleanContent.toLowerCase().includes(query) ||
+      post.description.toLowerCase().includes(query)
+    );
+  });
 
   const allTags = [
     ...new Set(searchResults.flatMap((post) => post.tags || [])),
@@ -35,8 +41,13 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
 
   if (searchResults.length === 0) {
     return (
-      <div className='pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
-        <p>'{resolvedParams.query}'에 대한 검색 결과가 없습니다.</p>
+      <div className='text-2xl pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
+        <span className='text-[var(--primary)] dark:text-[var(--primary-dark)]'>
+          '{resolvedParams.query}'
+        </span>
+        <span className='text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
+          에 대한 검색 결과가 없습니다.
+        </span>
       </div>
     );
   }

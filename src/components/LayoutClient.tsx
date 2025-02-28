@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Footer from './Footer';
 import Header from './Header';
 import Sidebar from './Sidebar';
@@ -12,18 +12,6 @@ interface LayoutClientProps {
 
 const LayoutClient = ({ children, allTags }: LayoutClientProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    if (isSidebarOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isSidebarOpen]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -40,7 +28,7 @@ const LayoutClient = ({ children, allTags }: LayoutClientProps) => {
         allTags={allTags}
         onClose={toggleSidebar}
       />
-      <main className='pt-[72px] min-h-screen dark:bg-[var(--background-dark)]'>
+      <main className='pt-[72px] min-h-screen dark:bg-[var(--background-dark)] overflow-x-hidden'>
         {children}
       </main>
       <Footer />

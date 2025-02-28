@@ -34,7 +34,7 @@ const PostCard = ({ post, options = 'list' }: PostCardProps) => (
         />
       </li>
     ) : (
-      <div className='relative flex flex-col min-h-full border rounded-lg shadow-md overflow-hidden transition hover:shadow-lg dark:bg-[var(--gray-04-dark)] dark:border-transparent'>
+      <div className='relative flex flex-col min-h-full border rounded-2xl shadow-md overflow-hidden transition hover:shadow-lg dark:bg-[var(--gray-04-dark)] dark:border-transparent'>
         <Image
           src={post.thumbnail || '/images/default-thumbnail.png'}
           alt='썸네일 이미지'
