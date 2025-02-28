@@ -9,12 +9,12 @@ import { getPost } from '@/utils/posts';
 
 type tParams = Promise<{ slug: string }>;
 
-export async function generateMetadata({
+export const generateMetadata = async ({
   params,
 }: {
-  params: { slug: string };
-}): Promise<Metadata> {
-  const { slug } = params;
+  params: tParams;
+}): Promise<Metadata> => {
+  const { slug } = await params;
   const post = await getPost(slug).catch(() => null);
 
   if (!post) {
@@ -24,7 +24,6 @@ export async function generateMetadata({
     };
   }
 
-  // 썸네일이 있으면 해당 이미지를, 없으면 기본 이미지 사용
   const ogImageUrl = post.thumbnail || '/images/og-image.png';
 
   return {
@@ -46,7 +45,7 @@ export async function generateMetadata({
       ],
     },
   };
-}
+};
 
 const DetailPage = async ({ params }: { params: tParams }) => {
   const { slug } = await params;
