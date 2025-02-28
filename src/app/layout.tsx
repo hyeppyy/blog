@@ -6,8 +6,8 @@ import ThemeProvider from '@/components/ThemeProvider';
 import { getAllPosts } from '@/utils/posts';
 
 export const metadata: Metadata = {
-  title: "heyppyy's blog",
-  description: "heyppyy's frontend blog project",
+  title: "hyeppyy's blog",
+  description: "hyeppyy's frontend blog project",
 };
 
 const pretendard = localFont({
@@ -32,9 +32,7 @@ const RootLayout = async ({
 
   return (
     <html lang='ko'>
-      <body
-        className={`${pretendard.variable} font-pretendard overflow-scroll`}
-      >
+      <body className={`${pretendard.variable} font-pretendard`}>
         <ThemeProvider>
           <LayoutClient allTags={allTags}>{children} </LayoutClient>
         </ThemeProvider>
