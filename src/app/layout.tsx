@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   openGraph: {
     images: [
       {
-        url: '/images/og-image.jpg',
+        url: '/images/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'img',
+        alt: '섬네일 이미지',
       },
     ],
   },
