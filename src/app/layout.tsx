@@ -8,6 +8,9 @@ import { getAllPosts } from '@/utils/posts';
 export const metadata: Metadata = {
   title: "hyeppyy's blog",
   description: '개인 기술 블로그',
+  verification: {
+    google: 'OvzGB4zMpuRthBwtQZ4ZbQje4B-myZ7BvFLUWnNLe7E',
+  },
   openGraph: {
     images: [
       {
