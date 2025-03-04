@@ -1,6 +1,6 @@
 ---
-title: 'Type error: Type '{ params: { slug: string; }; }' does not satisfy the constraint 'PageProps'.'
-description: 'Next.js PageProps 타입 에러'
+title: 'Next.js PageProps 타입 에러'
+description: '블로그 제작 중, 해당 에러가 발생했다. 에러 메시지를 보면 컴포넌트의 params 속성이 예상된 타입과 일치하지 않는다고 한다.'
 date: '2024년 03월 04일'
 thumbnail: '/images/thumbnail/1.png'
 tags: ['트러블슈팅', 'Typescript', 'Next.js']
@@ -23,7 +23,7 @@ Type error: Type '{ params: { slug: string; }; }' does not satisfy the constrain
 
 Next.js 13 이상부터는 'params'와 'searchParams'가 비동기적으로 로드되는 데이터를 포함해야 할 경우, Promise 타입으로 처리해야 한다.
 
-아래 코드에서는 params 객체의 타입을 Promise가 아닌 { slug: string }로 지정하고 있어 문제가 발생한다.
+아래 코드에서는 **params 객체의 타입을 Promise가 아닌 { slug: string }로 지정하고 있어 문제가 발생한다.**
 
 **문제 코드**
 
@@ -101,7 +101,7 @@ export const generateMetadata = async ({ params }: { params: { slug: string } })
 
 ```
 
-## 해결방법
+## 해결 방법
 
 params 타입을 Promise 타입으로 변경해주었다.
 불러온 값을 사용하기 위해서는 서버 컴포넌트인 경우, await 키워드를 사용해 필요한 값을 추출하고 클라이언트 컴포넌트인 경우, use 훅을 사용해 필요한 값을 추출한다. 예시 코드에서는 서버 컴포넌트이기 때문에 await 키워드를 사용했다.
