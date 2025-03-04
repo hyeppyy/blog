@@ -38,30 +38,39 @@ export const getAllPosts = (): PostProps[] => {
   return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
 };
 
-export const getPost = async (slug: string): Promise<PostProps> => {
+export const getPost = async (slug: string): Promise<PostProps | null> => {
   const postDir = path.join(postsDirectory, slug);
   const filePath = path.join(postDir, 'index.md');
 
-  const fileContents = await fs.promises.readFile(filePath, 'utf8');
-  const { data, content } = matter(fileContents);
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
 
-  const contentHtml = await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeRaw)
-    .use(rehypeSlug)
-    .use(rehypeStringify)
-    .process(content)
-    .then((file) => String(file));
+  try {
+    const fileContents = await fs.promises.readFile(filePath, 'utf8');
+    const { data, content } = matter(fileContents);
 
-  return {
-    slug,
-    title: data.title,
-    description: data.description,
-    date: data.date,
-    tags: data.tags || [],
-    content: contentHtml,
-    thumbnail: data.thumbnail || null,
-  };
+    const contentHtml = await unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+      .use(rehypeSlug)
+      .use(rehypeStringify)
+      .process(content)
+      .then((file) => String(file));
+
+    return {
+      slug,
+      title: data.title,
+      description: data.description,
+      date: data.date,
+      tags: data.tags || [],
+      content: contentHtml,
+      thumbnail: data.thumbnail || null,
+    };
+  } catch (error) {
+    console.error(`❌ getPost: 파일 읽기 중 오류 발생 (slug: ${slug})`, error);
+    return null;
+  }
 };

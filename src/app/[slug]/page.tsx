@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import ContentsNav from '@/components/ContentsNav';
 import Giscus from '@/components/Giscus';
 import TagButton from '@/components/TagButton';
@@ -64,8 +65,8 @@ const DetailPage = async ({ params }: { params: tParams }) => {
     : null;
   const nextPost = await getPost(nextPostSlug).catch(() => null);
 
-  if (!post) {
-    return <div>포스트를 찾을 수 없습니다</div>;
+  if (post === null) {
+    notFound();
   }
 
   const toc = await extractTableOfContents(post.content);
