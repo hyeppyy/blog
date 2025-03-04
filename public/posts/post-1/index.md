@@ -109,7 +109,7 @@ params 타입을 Promise 타입으로 변경해주었다.
 **수정된 코드**
 
 ```
-type Params = { slug: string };
+type tParams = Promise<{ slug: string }>;
 
 export const generateMetadata = async ({
   params,

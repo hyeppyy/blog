@@ -8,7 +8,7 @@ import TagButton from '@/components/TagButton';
 import extractTableOfContents from '@/utils/contents';
 import { getPost } from '@/utils/posts';
 
-type tParams = { slug: string };
+type tParams = Promise<{ slug: string }>;
 
 export const generateMetadata = async ({
   params,
