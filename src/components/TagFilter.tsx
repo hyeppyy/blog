@@ -8,7 +8,7 @@ interface TagFilterProps {
   selectedTags?: string[];
 }
 
-const TagFilter = ({ tags = [] }: TagFilterProps) => {
+const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

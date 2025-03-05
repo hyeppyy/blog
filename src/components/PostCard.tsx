@@ -9,7 +9,7 @@ interface PostCardProps {
   options?: PostViewType;
 }
 
-const PostCard = ({ post, options = 'list' }: PostCardProps) => (
+const PostCard: React.FC<PostCardProps> = ({ post, options = 'list' }) => (
   <Link className='group' href={`/${post.slug}`}>
     {options === 'list' ? (
       <li className='flex justify-between pt-[32px] pb-[32px] gap-[48px] border-b border-b-[var(--gray-01)] dark:border-b-[var(--gray-03-dark)] inline-block'>
@@ -17,7 +17,7 @@ const PostCard = ({ post, options = 'list' }: PostCardProps) => (
           <span className='text-xl md:text-3xl leading-[2rem] md:leading-[1.5em] font-semibold pb-[20px] dark:text-[var(--gray-dark)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary-dark)] transition-colors duration-200'>
             {post.title}
           </span>
-          <span className='text-sm md:text-md leading-[1.5rem] md:leading-[1.4em] pb-[24px] font-regular text-[var(--gray-02)] dark:text-[var(--gray-02-dark)]'>
+          <span className='text-sm md:text-md leading-[1.5rem] md:leading-[1.4em] pb-[24px] font-regular text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
             {post.description}
           </span>
           <span className='text-xs md:text-sm font-regular text-[var(--gray-02)] dark:text-[var(--gray-02-dark)]'>

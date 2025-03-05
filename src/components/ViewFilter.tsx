@@ -2,13 +2,12 @@
 
 import { LayoutGrid, List } from 'lucide-react';
 
-const ViewFilter = ({
-  viewType,
-  setViewType,
-}: {
+interface ViewFilterProps {
   viewType: 'list' | 'card';
   setViewType: (type: 'list' | 'card') => void;
-}) => (
+}
+
+const ViewFilter: React.FC<ViewFilterProps> = ({ viewType, setViewType }) => (
   <div className='flex gap-[16px]'>
     <List
       className={`cursor-pointer ${viewType === 'list' ? 'text-[var(--primary)] dark:text-[var(--primary-dark)]' : 'dark:text-[var(--gray-01-dark)]'}`}

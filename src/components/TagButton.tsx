@@ -2,7 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 
-const TagButton = ({ tag }: { tag: string }) => {
+interface TagButtonProps {
+  tag: string;
+}
+
+const TagButton: React.FC<TagButtonProps> = ({ tag }) => {
   const router = useRouter();
 
   const handleClick = () => {

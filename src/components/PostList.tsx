@@ -7,14 +7,16 @@ import PostCard from './PostCard';
 import TagFilter from './TagFilter';
 import ViewFilter from './ViewFilter';
 
-const PostList = ({
-  allTags,
-  filteredPosts,
-  showTags,
-}: {
+interface PostListProps {
   allTags: string[];
   filteredPosts: PostProps[];
   showTags: boolean;
+}
+
+const PostList: React.FC<PostListProps> = ({
+  allTags,
+  filteredPosts,
+  showTags,
 }) => {
   const [viewType, setViewType] = useState<'list' | 'card'>('list');
   const [currentPage, setCurrentPage] = useState(1);
