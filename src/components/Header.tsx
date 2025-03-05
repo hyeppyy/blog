@@ -11,7 +11,7 @@ interface HeaderProps {
   onMenuClick: () => void;
 }
 
-const Header = ({ onMenuClick }: HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const router = useRouter();
   const { isDarkMode } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');

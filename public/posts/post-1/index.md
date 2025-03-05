@@ -1,116 +1,132 @@
 ---
-title: '[React] useRef'
-description: '날씨가 좋당'
-date: '2024년 02월 27일'
+title: 'Next.js PageProps 타입 에러'
+description: 'Next.js 버전 불일치로 인한 PageProps 타입 에러를 해결합니다.'
+date: '2024년 03월 04일'
 thumbnail: '/images/thumbnail/1.png'
-tags: ['react', 'useRef']
+tags: ['트러블슈팅', 'Typescript', 'Next.js']
 ---
 
-# useRef의 기능
+# PageProps 타입 에러
 
-useState의 장점은 값이 업데이트되지만 화면에 보여줘야하기 때문에 **매번 리랜더링이 일어난다는 것**이다. useState가 너무 많으면 성능에 좋지는 않다.
-반면에 변수는 랜더링되지는 않지만, 성능면에서는 useState보다 더 좋다. 그래서 등장한 것이 useRef로, **useRef는 값을 유지시켜주는 변수이다. useState 처럼 UI를 업데이트 하지는 않는다.**
-
-## 1. 저장 공간으로서의 기능
-
-useRef가 주는 값은 '객체'이다. 그리고 객체안에 current라는 값이 들어있다. **즉, 객체에 있는 값에 접근하기 위해서 current라는 값을 이용해야 한다.**
-![](https://velog.velcdn.com/images/hjkwon/post/44f5fa8b-6b6e-4675-9a3c-e27a4612016e/image.png)
-
-변수처럼 값을 저장할 필요가 있는 변수. UI에 보일 필요가 없는 애들은 useRef를 사용하면 된다.
-불필요한 서버 호출을 막고싶을때. 예를들면 검색창에서 이전에 검색한 단어는 다시 검색하지 못하도록 막을 때 사용할 수 있다.
-
-### 예제
-
-prevInputValueRef는 UI에 보여줄 필요가 없기 때문, 전에 입력한 검색값을 단순히 저장하는 용도이다.
+블로그 제작 중, 해당 에러가 발생했다. 에러 메시지를 보면 컴포넌트의 params 속성이 예상된 타입과 일치하지 않는다고 한다.
 
 ```
-function Search() {
-	const [inputValue, setInputValue] = useState('');
-    const prevInputValueRef = useRef('');
-    const fetchSearch = () => {
-    	console.log('api호출 시작')
-        //호출 내용
-    }
+src/app/[slug]/page.tsx
+Type error: Type '{ params: { slug: string; }; }' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+```
 
-    const handleSearch = () =>{
-    	if (prevInputValueRef.current !== inputValue) {
-        	fetchSearch();
-            prevInputValueRef.current = inputValue;
+## 발생 원인
+
+프로젝트에서 Next.js 15 버전 사용 중이었는데, app 폴더 하위에서 post 페이지를 동적으로 불러오는 동적 라우팅의 타입이 **13버전 부터 Promise 타입으로 변경**되어서 발생하는 문제이다.
+
+Next.js 13 이상부터는 'params'와 'searchParams'가 비동기적으로 로드되는 데이터를 포함해야 할 경우, Promise 타입으로 처리해야 한다.
+
+아래 코드에서는 **params 객체의 타입을 Promise가 아닌 { slug: string }로 지정하고 있어 문제가 발생한다.**
+
+**문제 코드**
+
+```
+// src/app/[slug]/page.tsx
+import { getPost } from '@/utils/posts';
+
+
+const DetailPage = async ({ params }: { params: { slug: string } }) => {
+  const { slug } = params;
+  const post = await getPost(slug);
+  const toc = await extractTableOfContents(post.content);
+
+  const flattenedHeadings = toc.flatMap((item) => {
+    const result = [item];
+    if (item.children) {
+      result.push(...item.children);
+
+      item.children.forEach((child) => {
+        if (child.children) {
+          result.push(...child.children);
         }
-        //값이 같으면 검색하지 않는다.
+      });
     }
+    return result;
+  });
+```
 
-    return (
-    	<div>
-        	<input
-            	type='text'
-                value={inputValue}
-                onChange={(e)=>{setInputValue(e.target.value)}}
-                placeholder='검색어를 입력해주세요.'
-            />
-            <button onClick={handleSearch}>검색</button>
-        </div>
-    )
+### Next.js 12 및 이전 버전 (Pages Router)
+
+Next.js 12 및 이전 버전에서는 params를 처리할 때 동기적으로 전달되며, getStaticProps 또는 getServerSideProps에서 데이터를 받아오는 방식으로 사용되었다. params는 단순히 URL 파라미터로 제공되며, 비동기 처리가 필요하지 않았다.
+
+```
+// Next.js 12 이하에서는 `params`가 비동기 처리가 없이 직접적으로 전달됨
+export async function getStaticProps({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const post = await getPost(slug);
+
+  return {
+    props: {
+      post,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  // 경로를 동적으로 생성할 때 사용
+  const paths = getAllPosts().map((post) => ({
+    params: { slug: post.slug },
+  }));
+
+  return {
+    paths,
+    fallback: false,
+  };
 }
 ```
 
-## 2. Dom요소를 선택하는 기능
+### Next.js 13+ (App Router 도입)
 
-리액트를 사용하면 js + html = JSX 이기때문에 document.queryselector같이 직접 돔을 잡을일이 거의 없다. 하지만 Dom을 잡을 일이 아예 필요없는 것은 아니다. 애니메이션이나 포커스를 줄 때 사용할 수 있다.
-
-### 예제1
-
-검색버튼을 클릭하면 input에 포커스를 주는 예제이다.
+Next.js 13 이후부터 App Router가 도입되었다. params가 async 함수에서 처리되며, 해당 값은 Promise로 반환된다. 이로 인해 params를 처리할 때 비동기적으로 데이터를 가져오는 형태로 바뀌었다.
 
 ```
-function App() {
-    const InputEl = useRef('');
+// Next.js 13 이상에서는 `params`가 비동기적으로 처리되며,
+// `async` 함수 안에서 `params`를 사용할 때 `Promise`가 반환됨
+export const generateMetadata = async ({ params }: { params: { slug: string } }) => {
+  const { slug } = params; // 여기서 params는 비동기적으로 해결됨
+  const post = await getPost(slug);
 
-	const handleFocus= () => {
-    	InputEl.current.focus()
-    }
-
-    return (
-    	<div>
-        	<input
-            	type='text'
-                ref={InputEl}
-            />
-            <button onClick={handleFocus}>검색</button>
-        </div>
-    )
-}
-```
-
-### 예제2
-
-Top버튼을 누르면 화면 위로 올라가는 예제이다.
-
-> **scrollIntoView 매소드**
-> scrollIntoView가 호출하면 호출된 요소가 사용자에게 보여지도록 상위 요소의 스크롤이 이동된다.
-> https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
+  return {
+    title: post.title,
+    description: post.description,
+  };
+};
 
 ```
-function ScrollToTop() {
-    const topRef = useRef(null);
 
-	const scrollToTop= () => {
-    	if(topRef.current) {
-        	topRef.current.scrollIntoView({behavior:'smooth'})
-        }
-    }
+## 해결 방법
 
-    return (
-    	<div>
-        	<div
-            	ref={topRef}
-            >
-            	페이지 상단
-        	</div>
-            <button onClick={scrollToTop}>Top</button>
-        </div>
-    )
-}
+params 타입을 Promise 타입으로 변경해주었다.
+불러온 값을 사용하기 위해서는 서버 컴포넌트인 경우, await 키워드를 사용해 필요한 값을 추출하고 클라이언트 컴포넌트인 경우, use 훅을 사용해 필요한 값을 추출한다. 예시 코드에서는 서버 컴포넌트이기 때문에 await 키워드를 사용했다.
+
+**수정된 코드**
+
 ```
+type tParams = Promise<{ slug: string }>;
 
-https://www.youtube.com/watch?v=kllWOdnU1Fg&t=61s
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> => {
+  const { slug } = params;
+  const post = await getPost(slug).catch(() => null);
+};
+
+const DetailPage = async ({ params }: { params: Params }) => {
+  const { slug } = params;
+
+  let post;
+  try {
+    post = await getPost(slug);
+  } catch {
+    return <div>포스트를 찾을 수 없습니다</div>;
+  }
+```
