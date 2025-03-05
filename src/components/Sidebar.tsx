@@ -12,7 +12,7 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const Sidebar = ({ allTags, isOpen, onClose }: SidebarProps) => {
+const Sidebar: React.FC<SidebarProps> = ({ allTags, isOpen, onClose }) => {
   const router = useRouter();
 
   const handleTagClick = (tag: string) => {

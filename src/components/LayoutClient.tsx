@@ -10,7 +10,7 @@ interface LayoutClientProps {
   allTags: string[];
 }
 
-const LayoutClient = ({ children, allTags }: LayoutClientProps) => {
+const LayoutClient: React.FC<LayoutClientProps> = ({ children, allTags }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {

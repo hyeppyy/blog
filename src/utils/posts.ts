@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import rehypePrettyCode, { Options } from 'rehype-pretty-code';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
@@ -50,11 +51,18 @@ export const getPost = async (slug: string): Promise<PostProps | null> => {
     const fileContents = await fs.promises.readFile(filePath, 'utf8');
     const { data, content } = matter(fileContents);
 
+    const rehypePrettyCodeOptions: Options = {
+      theme: 'material-theme-palenight',
+      defaultLang: 'javascript',
+      keepBackground: true,
+    };
+
     const contentHtml = await unified()
       .use(remarkParse)
       .use(remarkGfm)
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
+      .use(rehypePrettyCode, rehypePrettyCodeOptions)
       .use(rehypeSlug)
       .use(rehypeStringify)
       .process(content)

@@ -1,6 +1,6 @@
 ---
 title: 'Next.js PageProps 타입 에러'
-description: '블로그 제작 중, 해당 에러가 발생했다. 에러 메시지를 보면 컴포넌트의 params 속성이 예상된 타입과 일치하지 않는다고 한다.'
+description: 'Next.js 버전 불일치로 인한 PageProps 타입 에러를 해결합니다.'
 date: '2024년 03월 04일'
 thumbnail: '/images/thumbnail/1.png'
 tags: ['트러블슈팅', 'Typescript', 'Next.js']

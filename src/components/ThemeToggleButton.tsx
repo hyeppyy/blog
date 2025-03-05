@@ -3,7 +3,11 @@
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 
-const ThemeToggleButton = ({ className }: { className?: string }) => {
+interface ThemeToggleButtonProps {
+  className?: string;
+}
+
+const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ className }) => {
   const { isDarkMode, toggleTheme } = useTheme();
 
   return (

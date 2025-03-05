@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import ContentsNav from '@/components/ContentsNav';
 import Giscus from '@/components/Giscus';
 import TagButton from '@/components/TagButton';
-import extractTableOfContents from '@/utils/contents';
 import { getPost } from '@/utils/posts';
 
 type tParams = Promise<{ slug: string }>;
@@ -69,25 +68,9 @@ const DetailPage = async ({ params }: { params: tParams }) => {
     notFound();
   }
 
-  const toc = await extractTableOfContents(post.content);
-
-  const flattenedHeadings = toc.flatMap((item) => {
-    const result = [item];
-    if (item.children) {
-      result.push(...item.children);
-
-      item.children.forEach((child) => {
-        if (child.children) {
-          result.push(...child.children);
-        }
-      });
-    }
-    return result;
-  });
-
   return (
     <>
-      <div className='flex flex-col pt-[64px] pb-[20px] w-full lg:w-[1200px] max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[180px]'>
+      <div className='flex flex-col pt-[64px] pb-[20px] w-full lg:w-[1200px] lg:max-w-[1200px] mx-auto px-[20px] sm:px-[20px] lg:px-[200px]'>
         <span className='text-4xl md:text-5xl leading-[2.8rem] md:leading-[4rem] font-semibold pb-[48px] text-[var(--black)] dark:text-[var(--gray-dark)]'>
           {post.title}
         </span>
@@ -153,10 +136,7 @@ const DetailPage = async ({ params }: { params: tParams }) => {
 
         <Giscus />
       </div>
-      <ContentsNav
-        headings={flattenedHeadings}
-        className='fixed max-w-[300px] min-w-[230px] top-[80px] right-[20px] z-10 hidden xl:block'
-      />
+      <ContentsNav html={post.content} />
     </>
   );
 };
