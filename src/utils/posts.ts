@@ -13,16 +13,23 @@ import { PostProps } from '@/types/post';
 
 const postsDirectory = path.join(process.cwd(), 'public', 'posts');
 
-export const getAllPosts = (): PostProps[] => {
-  const postFolders = fs.readdirSync(postsDirectory);
-  const allPosts = postFolders
-    .filter((folderName) => {
+export const getAllPosts = async (): Promise<PostProps[]> => {
+  try {
+    const postFolders = await fs.promises.readdir(postsDirectory);
+
+    const postsPromises = postFolders.map(async (folderName) => {
       const filePath = path.join(postsDirectory, folderName, 'index.md');
-      return fs.existsSync(filePath);
-    })
-    .map((folderName) => {
-      const filePath = path.join(postsDirectory, folderName, 'index.md');
-      const fileContents = fs.readFileSync(filePath, 'utf8');
+
+      const fileExists = await fs.promises
+        .access(filePath)
+        .then(() => true)
+        .catch(() => false);
+
+      if (!fileExists) {
+        return null;
+      }
+
+      const fileContents = await fs.promises.readFile(filePath, 'utf8');
       const { data } = matter(fileContents);
 
       return {
@@ -36,7 +43,17 @@ export const getAllPosts = (): PostProps[] => {
       };
     });
 
-  return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
+    const allPostsWithNull = await Promise.all(postsPromises);
+
+    const allPosts = allPostsWithNull.filter(
+      (post): post is PostProps => post !== null
+    );
+
+    return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
+  } catch (error) {
+    console.error('❌ getAllPosts: 게시물 불러오기 중 오류 발생', error);
+    return [];
+  }
 };
 
 export const getPost = async (slug: string): Promise<PostProps | null> => {

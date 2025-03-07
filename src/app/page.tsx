@@ -2,14 +2,26 @@ import PostList from '@/components/PostList';
 import { PostProps } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
-type tSearchParams = Promise<{ tags?: string }>;
+export async function generateStaticParams() {
+  const allPosts = await getAllPosts();
+  const allTagsSet = new Set<string>();
 
-const Home = async ({ searchParams }: { searchParams: tSearchParams }) => {
-  const resolvedSearchParams = await searchParams;
+  allPosts.forEach((post: PostProps) => {
+    post.tags.forEach((tag) => allTagsSet.add(tag));
+  });
+
+  const allTags = Array.from(allTagsSet);
+
+  return allTags.map((tag) => ({
+    tags: tag,
+  }));
+}
+
+const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
   const allPosts = await getAllPosts();
 
   if (!allPosts || allPosts.length === 0) {
-    return <p>데이터를 조회중입니다..</p>;
+    return <p>데이터를 조회 중입니다..</p>;
   }
 
   const allTagsSet = new Set<string>();
@@ -18,9 +30,7 @@ const Home = async ({ searchParams }: { searchParams: tSearchParams }) => {
   });
   const allTags = Array.from(allTagsSet);
 
-  const selectedTags = resolvedSearchParams.tags
-    ? resolvedSearchParams.tags.split(',')
-    : [];
+  const selectedTags = searchParams.tags ? searchParams.tags.split(',') : [];
 
   const filteredPosts =
     selectedTags.length === 0

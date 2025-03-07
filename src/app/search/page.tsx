@@ -3,12 +3,11 @@ import { PostProps } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
 interface SearchPageProps {
-  searchParams: Promise<{ query?: string }>;
+  searchParams: { query?: string };
 }
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
-  const resolvedParams = await searchParams;
-  const query = resolvedParams.query?.toLowerCase() || '';
+  const query = searchParams.query?.toLowerCase() || '';
   const allPosts = await getAllPosts();
 
   if (!allPosts || allPosts.length === 0) {
@@ -43,7 +42,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     return (
       <div className='text-2xl pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
         <span className='text-[var(--primary)] dark:text-[var(--primary-dark)]'>
-          '{resolvedParams.query}'
+          '{query}'
         </span>
         <span className='text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
           에 대한 검색 결과가 없습니다.
@@ -57,7 +56,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       <div className='pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
         <span className='text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] text-2xl'>
           <span className='text-[var(--primary)] dark:text-[var(--primary-dark)]'>
-            '{resolvedParams.query}'
+            '{query}'
           </span>
           에 대한 검색 결과 ({searchResults.length}건)
         </span>
