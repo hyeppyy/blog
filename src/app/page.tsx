@@ -2,6 +2,9 @@ import PostList from '@/components/PostList';
 import { PostProps } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
+interface SearchPageProps {
+  searchParams: Promise<{ tags?: string }>;
+}
 export async function generateStaticParams() {
   const allPosts = await getAllPosts();
   const allTagsSet = new Set<string>();
@@ -17,7 +20,8 @@ export async function generateStaticParams() {
   }));
 }
 
-const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
+const Home = async ({ searchParams }: SearchPageProps) => {
+  const resolvedSearchParams = await searchParams;
   const allPosts = await getAllPosts();
 
   if (!allPosts || allPosts.length === 0) {
@@ -30,7 +34,9 @@ const Home = async ({ searchParams }: { searchParams: { tags?: string } }) => {
   });
   const allTags = Array.from(allTagsSet);
 
-  const selectedTags = searchParams.tags ? searchParams.tags.split(',') : [];
+  const selectedTags = resolvedSearchParams.tags
+    ? resolvedSearchParams.tags.split(',')
+    : [];
 
   const filteredPosts =
     selectedTags.length === 0

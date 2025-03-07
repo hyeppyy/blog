@@ -3,11 +3,30 @@ import { PostProps } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
 interface SearchPageProps {
-  searchParams: { query?: string };
+  searchParams: Promise<{ query?: string }>;
+}
+
+export async function generateStaticParams() {
+  const allPosts = await getAllPosts();
+
+  const searchTerms = new Set<string>();
+  allPosts.forEach((post: PostProps) => {
+    searchTerms.add(post.title.toLowerCase());
+    searchTerms.add(post.description.toLowerCase());
+    const contentParts = post.content.split('---');
+    const cleanContent =
+      contentParts.length > 2 ? contentParts.slice(2).join('---').trim() : '';
+    searchTerms.add(cleanContent.toLowerCase());
+  });
+
+  return Array.from(searchTerms).map((term) => ({
+    query: term,
+  }));
 }
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
-  const query = searchParams.query?.toLowerCase() || '';
+  const resolvedParams = await searchParams;
+  const query = resolvedParams.query?.toLowerCase() || '';
   const allPosts = await getAllPosts();
 
   if (!allPosts || allPosts.length === 0) {
@@ -42,7 +61,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     return (
       <div className='text-2xl pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
         <span className='text-[var(--primary)] dark:text-[var(--primary-dark)]'>
-          '{query}'
+          '{resolvedParams.query}'
         </span>
         <span className='text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
           에 대한 검색 결과가 없습니다.
@@ -56,7 +75,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       <div className='pt-[32px] pb-[40px] w-full max-w-[1200px] mx-auto px-[20px] sm:px-[20px] md:px-[90px]'>
         <span className='text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] text-2xl'>
           <span className='text-[var(--primary)] dark:text-[var(--primary-dark)]'>
-            '{query}'
+            '{resolvedParams.query}'
           </span>
           에 대한 검색 결과 ({searchResults.length}건)
         </span>
