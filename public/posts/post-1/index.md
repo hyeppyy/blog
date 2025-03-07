@@ -1,7 +1,7 @@
 ---
 title: 'Next.js PageProps 타입 에러'
 description: 'Next.js 버전 불일치로 인한 PageProps 타입 에러를 해결합니다.'
-date: '2024년 03월 04일'
+date: '2025년 03월 04일'
 thumbnail: '/images/thumbnail/1.png'
 tags: ['트러블슈팅', 'Typescript', 'Next.js']
 ---
@@ -11,7 +11,7 @@ tags: ['트러블슈팅', 'Typescript', 'Next.js']
 블로그 제작 중, 해당 에러가 발생했다. 에러 메시지를 보면 컴포넌트의 params 속성이 예상된 타입과 일치하지 않는다고 한다.
 
 ```
-src/app/[slug]/page.tsx
+//src/app/[slug]/page.tsx
 Type error: Type '{ params: { slug: string; }; }' does not satisfy the constraint 'PageProps'.
   Types of property 'params' are incompatible.
     Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
