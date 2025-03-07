@@ -22,13 +22,3 @@
   --gray-03-dark: #5c5c5c;
   --gray-04-dark: #2c2c2c;
 }
-
-@layer base {
-  ::selection {
-    @apply bg-[#ffcde1];
-  }
-
-  .dark ::selection {
-    @apply bg-[#ffa0c5] text-white;
-  }
-}
