@@ -39,6 +39,8 @@ const extractHeadingsFromHtml = (html: string): HeadingProps[] => {
 const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
   const [headings, setHeadings] = useState<HeadingProps[]>([]);
   const [activeId, setActiveId] = useState<string>('');
+  const [isScrolling, setIsScrolling] = useState<boolean>(false);
+  const [manualActiveId, setManualActiveId] = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -49,22 +51,22 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
   }, [html]);
 
   useEffect(() => {
-    // 스크롤 시 현재 보이는 헤딩 ID 확인하는 함수
     const handleScroll = () => {
+      if (isScrolling) return;
+
       const headingElements = Array.from(
         document.querySelectorAll('h1, h2, h3, h4, h5, h6')
       ).filter((el) => el.id);
 
-      // 화면에 보이는 헤딩 찾기
       const visibleHeadings = headingElements.filter((el) => {
         const rect = el.getBoundingClientRect();
         return rect.top >= 0 && rect.top < window.innerHeight / 2;
       });
 
-      // 가장 위에 있는 헤딩 선택
       const topHeading = visibleHeadings[0];
       if (topHeading) {
         setActiveId(topHeading.id);
+        setManualActiveId(null);
       }
     };
 
@@ -75,18 +77,20 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [pathname]);
+  }, [pathname, isScrolling]);
 
   const scrollToHeading = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const currentScrollPos = window.scrollY;
+      setIsScrolling(true);
 
+      setActiveId(id);
+      setManualActiveId(id);
+
+      const currentScrollPos = window.scrollY;
       const rect = element.getBoundingClientRect();
       const absoluteTop = rect.top + currentScrollPos;
-
       const headerHeight = 56;
-
       const additionalMargin = 24;
 
       window.scrollTo({
@@ -94,7 +98,9 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
         behavior: 'smooth',
       });
 
-      setActiveId(id);
+      setTimeout(() => {
+        setIsScrolling(false);
+      }, 1000);
     }
   };
 
@@ -114,6 +120,10 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
           const indentLevel = heading.level - minLevel;
           const indentPixels = indentLevel * 16;
 
+          const isActive =
+            manualActiveId === heading.id ||
+            (!manualActiveId && activeId === heading.id);
+
           return (
             <li
               key={index}
@@ -123,7 +133,7 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
               <button
                 onClick={() => scrollToHeading(heading.id)}
                 className={`text-left w-full ${
-                  activeId === heading.id
+                  isActive
                     ? 'text-[var(--primary)] dark:text-[var(--primary-dark)] font-semibold'
                     : 'text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--black)] dark:hover:text-[var(--white)]'
                 }`}

@@ -5,5 +5,5 @@ export interface PostProps {
   tags: string[];
   content: string;
   description: string;
-  thumbnail?: string;
+  thumbnail: string;
 }

@@ -1,8 +1,10 @@
 import type { MetadataRoute } from 'next';
 import { getAllPosts } from '@/utils/posts';
 
-const sitemap = (): MetadataRoute.Sitemap => {
-  const posts = getAllPosts().map((post) => ({
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const allPosts = await getAllPosts();
+
+  const posts = allPosts.map((post) => ({
     url: `https://www.hyeppyy.com/${post.slug}`,
     priority: 1,
   }));
@@ -13,6 +15,4 @@ const sitemap = (): MetadataRoute.Sitemap => {
   }));
 
   return [...routes, ...posts];
-};
-
-export default sitemap;
+}

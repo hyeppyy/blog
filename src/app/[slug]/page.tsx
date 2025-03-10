@@ -5,17 +5,17 @@ import { notFound } from 'next/navigation';
 import ContentsNav from '@/components/ContentsNav';
 import Giscus from '@/components/Giscus';
 import TagButton from '@/components/TagButton';
-import { getPost } from '@/utils/posts';
+import { getAllPosts, getPost } from '@/utils/posts';
 
-type tParams = Promise<{ slug: string }>;
+interface ParamsProps {
+  params: Promise<{ slug: string }>;
+}
 
-export const generateMetadata = async ({
+export async function generateMetadata({
   params,
-}: {
-  params: tParams;
-}): Promise<Metadata> => {
+}: ParamsProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPost(slug).catch(() => null);
+  const post = await getPost(slug);
 
   if (!post) {
     return {
@@ -45,14 +45,22 @@ export const generateMetadata = async ({
       ],
     },
   };
-};
+}
 
-const DetailPage = async ({ params }: { params: tParams }) => {
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
+
+const DetailPage = async ({ params }: ParamsProps) => {
   const { slug } = await params;
   const post = await getPost(slug);
 
-  const currentIndex = Number(slug.match(/\d+$/)?.[0]);
+  if (!post) {
+    notFound();
+  }
 
+  const currentIndex = Number(slug.match(/\d+$/)?.[0]);
   const prevIndex = currentIndex > 1 ? currentIndex - 1 : null;
   const nextIndex = currentIndex + 1;
 
@@ -63,10 +71,6 @@ const DetailPage = async ({ params }: { params: tParams }) => {
     ? await getPost(prevPostSlug).catch(() => null)
     : null;
   const nextPost = await getPost(nextPostSlug).catch(() => null);
-
-  if (post === null) {
-    notFound();
-  }
 
   return (
     <>

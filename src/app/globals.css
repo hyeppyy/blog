@@ -25,10 +25,10 @@
 
 @layer base {
   ::selection {
-    @apply bg-[#ffcde1];
+    @apply bg-[#ffcde1] text-black;
   }
 
   .dark ::selection {
-    @apply bg-[#ffa0c5] text-white;
+    @apply bg-[#f489b3] text-white;
   }
 }

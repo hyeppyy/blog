@@ -6,6 +6,24 @@ interface SearchPageProps {
   searchParams: Promise<{ query?: string }>;
 }
 
+export async function generateStaticParams() {
+  const allPosts = await getAllPosts();
+
+  const searchTerms = new Set<string>();
+  allPosts.forEach((post: PostProps) => {
+    searchTerms.add(post.title.toLowerCase());
+    searchTerms.add(post.description.toLowerCase());
+    const contentParts = post.content.split('---');
+    const cleanContent =
+      contentParts.length > 2 ? contentParts.slice(2).join('---').trim() : '';
+    searchTerms.add(cleanContent.toLowerCase());
+  });
+
+  return Array.from(searchTerms).map((term) => ({
+    query: term,
+  }));
+}
+
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const resolvedParams = await searchParams;
   const query = resolvedParams.query?.toLowerCase() || '';
