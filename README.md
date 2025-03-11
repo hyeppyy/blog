@@ -1,4 +1,4 @@
-# https://www.hyeppyy.com
+# www.hyeppyy.com
 
 <div align=center>
 <img src="public/images/hyeppyLog.png" width="355" height="106" >
