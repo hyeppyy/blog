@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PostProps } from '@/types/post';
+import { PostContentsProps } from '@/types/post';
 import Pagination from './Pagination';
 import PostCard from './PostCard';
 import TagFilter from './TagFilter';
@@ -9,7 +9,7 @@ import ViewFilter from './ViewFilter';
 
 interface PostListProps {
   allTags: string[];
-  filteredPosts: PostProps[];
+  filteredPosts: PostContentsProps[];
   showTags: boolean;
 }
 

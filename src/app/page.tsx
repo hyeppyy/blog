@@ -1,5 +1,5 @@
 import PostList from '@/components/PostList';
-import { PostProps } from '@/types/post';
+import { PostContentsProps } from '@/types/post';
 import { getAllPosts } from '@/utils/posts';
 
 interface SearchPageProps {
@@ -9,7 +9,7 @@ export async function generateStaticParams() {
   const allPosts = await getAllPosts();
   const allTagsSet = new Set<string>();
 
-  allPosts.forEach((post: PostProps) => {
+  allPosts.forEach((post: PostContentsProps) => {
     post.tags.forEach((tag) => allTagsSet.add(tag));
   });
 
@@ -29,7 +29,7 @@ const Home = async ({ searchParams }: SearchPageProps) => {
   }
 
   const allTagsSet = new Set<string>();
-  allPosts.forEach((post: PostProps) => {
+  allPosts.forEach((post: PostContentsProps) => {
     post.tags.forEach((tag) => allTagsSet.add(tag));
   });
   const allTags = Array.from(allTagsSet);
