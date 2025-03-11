@@ -32,3 +32,17 @@
     @apply bg-[#f489b3] text-white;
   }
 }
+
+[data-rehype-pretty-code-title] {
+  @apply px-[16px] py-[8px] font-pretendard text-white bg-[#0f121b] rounded-t-lg;
+  transform: translateY(10px);
+}
+
+pre code {
+  padding-top: 8px;
+}
+
+.prose :where(code):not(:where([class~='not-prose'] *))::before,
+.prose :where(code):not(:where([class~='not-prose'] *))::after {
+  content: '';
+}

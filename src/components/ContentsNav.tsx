@@ -2,53 +2,17 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-
-interface HeadingProps {
-  id: string;
-  text: string;
-  level: number;
-}
+import { HeadingProps } from '@/types/post';
 
 interface ContentsNavProps {
-  html: string;
+  headings: HeadingProps[];
 }
 
-// HTML 문자열에서 헤딩 추출
-const extractHeadingsFromHtml = (html: string): HeadingProps[] => {
-  const headings: HeadingProps[] = [];
-
-  // h1-h6 태그를 찾는 정규식
-  const headingRegex = /<h([1-6])[^>]*id=["']([^"']+)["'][^>]*>(.*?)<\/h\1>/g;
-  let match;
-
-  while ((match = headingRegex.exec(html)) !== null) {
-    const level = parseInt(match[1]);
-    const id = match[2];
-    const text = match[3].replace(/<[^>]*>/g, '');
-
-    headings.push({
-      id,
-      text,
-      level,
-    });
-  }
-
-  return headings;
-};
-
-const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
-  const [headings, setHeadings] = useState<HeadingProps[]>([]);
+const ContentsNav: React.FC<ContentsNavProps> = ({ headings }) => {
   const [activeId, setActiveId] = useState<string>('');
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
   const [manualActiveId, setManualActiveId] = useState<string | null>(null);
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (html) {
-      const extractedHeadings = extractHeadingsFromHtml(html);
-      setHeadings(extractedHeadings);
-    }
-  }, [html]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -134,7 +98,7 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
                 onClick={() => scrollToHeading(heading.id)}
                 className={`text-left w-full ${
                   isActive
-                    ? 'text-[var(--primary)] dark:text-[var(--primary-dark)] font-semibold'
+                    ? 'text-[var(--primary)] dark:text-[var(--primary-dark)]'
                     : 'text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--black)] dark:hover:text-[var(--white)]'
                 }`}
               >
@@ -152,7 +116,7 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ html }) => {
   }
 
   return (
-    <nav className='w-[200px] fixed top-[120px] right-[20px] max-h-[calc(100vh-8rem)] overflow-y-auto p-4 rounded-lg hidden xl:block'>
+    <nav className='w-[200px] fixed top-[130px] right-[20px] max-h-[calc(100vh-8rem)] overflow-y-auto p-4 rounded-lg  hidden xl:block'>
       <h2 className='text-lg font-semibold mb-4 dark:text-[var(--white)]'>
         목차
       </h2>
