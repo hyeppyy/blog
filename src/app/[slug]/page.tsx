@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ContentsNav from '@/components/ContentsNav';
 import Giscus from '@/components/Giscus';
+import MDXContentClient from '@/components/MDXContentClient';
 import TagButton from '@/components/TagButton';
 import { getAllPosts, getPost } from '@/utils/posts';
 
@@ -97,10 +98,7 @@ const DetailPage = async ({ params }: ParamsProps) => {
             />
           </figure>
         )}
-        <div
-          className='prose max-w-none pt-[64px] dark:prose-invert'
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <MDXContentClient content={post.content} />
         <div className='w-full flex justify-end mt-[32px]'>
           <Link href='/'>
             <button className='text-sm w-fit px-[12px] py-[8px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'>
@@ -137,10 +135,9 @@ const DetailPage = async ({ params }: ParamsProps) => {
             </Link>
           )}
         </div>
-
         <Giscus />
       </div>
-      <ContentsNav html={post.content} />
+      <ContentsNav headings={post.headings} />
     </>
   );
 };
