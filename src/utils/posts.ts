@@ -5,11 +5,16 @@ import { serialize } from 'next-mdx-remote/serialize';
 import rehypePrettyCode, { Options } from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
-import { PostDataProps, PostContentsProps, HeadingProps } from '@/types/post';
+import {
+  PostDataProps,
+  PostBaseProps,
+  SearchPostProps,
+  HeadingProps,
+} from '@/types/post';
 
 const postsDirectory = path.join(process.cwd(), 'public', 'posts');
 
-export const getAllPosts = async (): Promise<PostContentsProps[]> => {
+export const getAllPosts = async (): Promise<PostBaseProps[]> => {
   try {
     const postFolders = await fs.promises.readdir(postsDirectory);
 
@@ -47,6 +52,46 @@ export const getAllPosts = async (): Promise<PostContentsProps[]> => {
     return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
   } catch (error) {
     console.error('❌ getAllPosts: 게시물 불러오기 중 오류 발생', error);
+    return [];
+  }
+};
+
+export const getAllPostsForSearch = async (): Promise<SearchPostProps[]> => {
+  try {
+    const postFolders = await fs.promises.readdir(postsDirectory);
+
+    const postsPromises = postFolders.map(async (folderName) => {
+      const filePath = path.join(postsDirectory, folderName, 'index.mdx');
+
+      if (!fs.existsSync(filePath)) {
+        return null;
+      }
+
+      const fileContents = await fs.promises.readFile(filePath, 'utf8');
+      const { data, content } = matter(fileContents);
+
+      return {
+        slug: folderName,
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        tags: data.tags || [],
+        thumbnail: data.thumbnail || null,
+        rawContent: content,
+      };
+    });
+
+    const allPostsWithNull = await Promise.all(postsPromises);
+    const allPosts = allPostsWithNull.filter(
+      (post): post is SearchPostProps => post !== null
+    );
+
+    return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
+  } catch (error) {
+    console.error(
+      '❌ getAllPostsForSearch: 게시물 불러오기 중 오류 발생',
+      error
+    );
     return [];
   }
 };

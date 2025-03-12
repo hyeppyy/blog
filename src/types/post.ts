@@ -6,7 +6,7 @@ export interface HeadingProps {
   level: number;
 }
 
-export interface PostContentsProps {
+export interface PostBaseProps {
   slug: string;
   title: string;
   description: string;
@@ -15,7 +15,13 @@ export interface PostContentsProps {
   thumbnail: string | null;
 }
 
-export interface PostDataProps extends PostContentsProps {
+// 상세 페이지용
+export interface PostDataProps extends PostBaseProps {
   content: MDXRemoteSerializeResult;
   headings: HeadingProps[];
+}
+
+// 검색용
+export interface SearchPostProps extends PostBaseProps {
+  rawContent: string;
 }
