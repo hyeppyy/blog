@@ -1,22 +1,19 @@
 import PostList from '@/components/PostList';
-import { PostProps } from '@/types/post';
-import { getAllPosts } from '@/utils/posts';
+import { SearchPostProps } from '@/types/post';
+import { getAllPostsForSearch } from '@/utils/posts';
 
 interface SearchPageProps {
   searchParams: Promise<{ query?: string }>;
 }
 
 export async function generateStaticParams() {
-  const allPosts = await getAllPosts();
+  const allPosts = await getAllPostsForSearch();
 
   const searchTerms = new Set<string>();
-  allPosts.forEach((post: PostProps) => {
+  allPosts.forEach((post: SearchPostProps) => {
     searchTerms.add(post.title.toLowerCase());
     searchTerms.add(post.description.toLowerCase());
-    const contentParts = post.content.split('---');
-    const cleanContent =
-      contentParts.length > 2 ? contentParts.slice(2).join('---').trim() : '';
-    searchTerms.add(cleanContent.toLowerCase());
+    searchTerms.add(post.rawContent.toLowerCase());
   });
 
   return Array.from(searchTerms).map((term) => ({
@@ -27,7 +24,7 @@ export async function generateStaticParams() {
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const resolvedParams = await searchParams;
   const query = resolvedParams.query?.toLowerCase() || '';
-  const allPosts = await getAllPosts();
+  const allPosts = await getAllPostsForSearch();
 
   if (!allPosts || allPosts.length === 0) {
     return <p>데이터를 조회중입니다..</p>;
@@ -41,17 +38,12 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     );
   }
 
-  const searchResults = allPosts.filter((post: PostProps) => {
-    const contentParts = post.content.split('---');
-    const cleanContent =
-      contentParts.length > 2 ? contentParts.slice(2).join('---').trim() : '';
-
-    return (
+  const searchResults = allPosts.filter(
+    (post: SearchPostProps) =>
       post.title.toLowerCase().includes(query) ||
-      cleanContent.toLowerCase().includes(query) ||
+      post.rawContent.toLowerCase().includes(query) ||
       post.description.toLowerCase().includes(query)
-    );
-  });
+  );
 
   const allTags = [
     ...new Set(searchResults.flatMap((post) => post.tags || [])),
