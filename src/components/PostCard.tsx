@@ -1,11 +1,11 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PostProps } from '@/types/post';
+import { PostBaseProps } from '@/types/post';
 
 type PostViewType = 'list' | 'card';
 interface PostCardProps {
-  post: PostProps;
+  post: PostBaseProps;
   options?: PostViewType;
 }
 
