@@ -38,12 +38,13 @@
 }
 
 [data-rehype-pretty-code-title] {
-  @apply px-[16px] py-[8px] font-pretendard text-white bg-[#0f121b] rounded-t-lg;
+  @apply px-[16px] py-[8px] font-pretendard text-white bg-[#0f121b] dark:bg-[#28292d] rounded-t-lg;
   transform: translateY(10px);
 }
 
-pre code {
-  padding-top: 8px;
+figure pre {
+  padding-top: 20px !important;
+  @apply dark:bg-[#121114] !important;
 }
 
 span[data-rehype-pretty-code-figure] code {
