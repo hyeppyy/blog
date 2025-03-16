@@ -1,0 +1,284 @@
+---
+title: 'Next.js 15에서 Context API를 활용한 다크 모드 구현하기(+Tailwind CSS)'
+description: 'React Context API와 localStorage를 활용해 구현했습니다.'
+date: '2025년 03월 17일'
+thumbnail: '/images/thumbnail/3.png'
+tags: ['Next.js']
+---
+
+import Callout from '@/components/Callout';
+
+# 고려한 점
+
+1. Context API: props 없이 전역 상태로 다크 모드 관리
+2. window.matchMedia: 사용자가 설정한 시스템 설정 반영
+3. 깜빡임 방지하기: 페이지 로드 시 테마가 변경되며 발생하는 깜빡임(flash of unstyled content)을 방지
+
+<br />
+
+# 다크 모드 구현
+
+## 1. `ThemeContext` 및 `ThemeProvider` 생성
+
+<Callout>
+  💡 useContext <br />
+  리액트에서 전역 상태를 관리하고, 여러 컴포넌트 간에 데이터를 쉽게 공유하기
+  위해 사용되는 훅. ThemeContext.Provider로 하위 컴포넌트에게 값을 제공하여
+  사용한다.
+</Callout>
+
+### 전체 코드
+
+`ThemeContext.Provider`에 `isDarkMode`, `toggleTheme` 값을 넘겨준다.
+
+```js {title="src/app/components/ThemeProvider.tsx"}
+'use client';
+
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
+const ThemeContext = createContext({
+  isDarkMode: false,
+  toggleTheme: () => {},
+});
+
+export const useTheme = () => useContext(ThemeContext);
+
+interface ThemeProviderProps {
+  children: ReactNode;
+}
+
+const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+
+    const storedTheme = localStorage.getItem('theme');
+
+    if (storedTheme) {
+      setIsDarkMode(storedTheme === 'dark');
+    } else {
+      // 시스템 테마 선호도 확인
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      setIsDarkMode(prefersDark);
+      localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode, mounted]);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  if (!mounted) {
+    return null;
+  }
+
+  return (
+    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export default ThemeProvider;
+```
+
+### 초기 테마 설정
+
+```
+useEffect(() => {
+  setMounted(true);
+
+  const storedTheme = localStorage.getItem('theme');
+
+  if (storedTheme) {
+    setIsDarkMode(storedTheme === 'dark');
+  } else {
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches;
+    setIsDarkMode(prefersDark);
+    localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
+  }
+}, []);
+```
+
+**window.matchMedia로 시스템 선호도 확인**
+
+`storedTheme`은 localStorage에서 `theme`라는 키로 저장된 값을 가져온다. 이 값은 사용자가 이전에 선택한 테마이다.
+localStorage에 저장된 `theme` 값이 있으면, 그 값에 따라 다크 모드 또는 라이트 모드를 설정한다.
+localStorage에 저장된 `theme` 값이 없으면, `window.matchMedia`를 통해 사용자 브라우저의 기본 색상 설정을 확인한다.
+나는 라이브러리 없이 했지만, next-themes라는 라이브러리로도 구현할 수 있는 모양이다.
+
+<br />
+
+<Callout>
+  💡 window.matchMedia <br />
+  브라우저에서 CSS 미디어 쿼리를 JavaScript로 다룰 수 있도록 해주는 API.
+  prefers-color-scheme을 감지해, 사용자의 시스템 테마 설정(라이트/다크 모드)을
+  가져올 수 있다.
+</Callout>
+
+### 테마 적용
+
+useEffect를 사용해 `isDarkMode` 상태가 변경될 때마다 실행되도록 했다.
+현재 선택된 테마를 localStorage에 저장하여 다음 방문 시에도 사용자의 선택을 기억할 수 있다.
+
+```
+useEffect(() => {
+  if (!mounted) return;
+
+  if (isDarkMode) {
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+  }
+}, [isDarkMode, mounted]);
+```
+
+### 하이드레이션 문제 해결(초기 깜빡임 방지)
+
+Next.js에서 발생할 수 있는 하이드레이션 불일치 문제를 해결할 수 있는 코드이다.
+mounted 상태가 false일 때는 null을 반환함으로써 클라이언트 사이드 렌더링이 완전히 준비될 때까지 기다리고, 그 후에 정확한 테마를 적용하는 방식이다.
+
+```
+if (!mounted) {
+  return null;
+}
+```
+
+또한 바로 위 코드에서, 컴포넌트가 마운트 된 후에만 DOM을 조작하도록 하여 초기 페이지 로드 시 발생할 수 있는 테마 깜빡임 현상을 방지한다.
+
+```
+useEffect(() => {
+  if (!mounted) return;
+}, [isDarkMode, mounted]);
+```
+
+## 2. `ThemeContext` 적용하기
+
+애플리케이션 최상위 레벨에서 ThemeProvider를 적용한다.
+
+```js {title="src/app/layout.tsx"}
+import ThemeProvider from '@/context/ThemeProvider';
+
+export default function App({ Component, pageProps }) {
+  return (
+    <ThemeProvider>
+      <Component {...pageProps} />
+    </ThemeProvider>
+  );
+}
+```
+
+## 3. 다크 모드 토글 버튼 만들기
+
+`ThemeContext`를 설정했으니, 이제 사용자가 테마를 전환할 수 있는 버튼을 만들어준다. useTheme에서 `isDarkMode`, `toggleTheme` 값을 받아와 사용한다. 아이콘은 lucide icon을 사용했다.
+
+```js {title="src/components/ThemeToggleButton.tsx"}
+'use client';
+
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from './ThemeProvider';
+
+interface ThemeToggleButtonProps {
+  className?: string;
+}
+
+const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ className }) => {
+  const { isDarkMode, toggleTheme } = useTheme();
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className={`${className} p-[4px] text-sm rounded-md text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] hover:dark:text-[var(--primary-dark)] transition-all duration-300`}
+      aria-label='Toggle Dark Mode'
+    >
+      {isDarkMode ? <Sun /> : <Moon />}
+    </button>
+  );
+};
+
+export default ThemeToggleButton;
+```
+
+**토글 버튼 header에 적용하기**
+
+```js {title="src/components/Header.tsx"}
+import { useTheme } from './ThemeProvider';
+import ThemeToggleButton from './ThemeToggleButton';
+
+const Header = () => {
+  const { isDarkMode } = useTheme();
+
+  return (
+    <header>
+      <ThemeToggleButton className='hidden sm:flex' />
+    </header>
+  );
+};
+export default Header;
+```
+
+## 4. 다크 모드 스타일 적용하기(Tailwind CSS)
+
+루트 경로에 있는 tailwind.config.ts 파일에 다음과 같이 적용한다.
+
+```js {title="tailwind.config.ts"}
+import type { Config } from 'tailwindcss';
+
+export default {
+  darkMode: 'class',
+  // 나머지 설정...
+} satisfies Config;
+```
+
+이제 className에 `dark: 속성`을 추가하면 다크 모드 스타일이 적용된다.
+
+```
+<div className="bg-white text-black dark:bg-gray-900 dark:text-white">
+  다크 모드 적용
+</div>
+```
+
+<br />
+
+# 느낀점
+
+1. Context API
+   전역 상태를 관리할 때 zustand나 redux 같은 라이브러리만 사용해 봤지 Context API를 사용해 볼 생각은 잘 안해봤다.
+   이번 기회에 사용해 봄으로써, 상태 관리 라이브러리 없이도 Context API 만으로 전역 테마를 효과적으로 관리할 수 있다는 것을 깨달았다. 블로그 같은
+   작은 프로젝트에서는 Context API가 Redux나 다른 상태 관리 라이브러리보다 더 간결하고 직관적인 해결책이 될 수 있음을 느꼈다.
+2. App Router와 'use client' 지시어
+   하이드레이션 에러가 발생하고 해결해 가면서, App Router를 사용할 때 클라이언트 컴포넌트와 서버 컴포넌트를 명확히 구분해야 한다는 점을 배웠다.
+   하지만 아직까지는 어렵다.. Next docs를 더욱 꼼꼼히 읽어야겠다.
+
+<br />
+
+# 참고
+
+- https://tailwindcss.com/docs/dark-mode
+- https://ko.react.dev/reference/react/useContext
