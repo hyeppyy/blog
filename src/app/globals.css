@@ -4,6 +4,7 @@
 
 :root {
   --primary: #ff7aae;
+  --primary-rgb: 255, 122, 174;
   --primary-light: #ffcde1;
   --primary-deep: #d12c6c;
   --primary-deep-rgb: 255, 122, 174;
@@ -58,4 +59,9 @@ span[data-rehype-pretty-code-figure] code [data-line] span {
 .prose :where(code):not(:where([class~='not-prose'] *))::before,
 .prose :where(code):not(:where([class~='not-prose'] *))::after {
   content: '';
+}
+
+.prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  margin: 0;
+  font-weight: 400;
 }

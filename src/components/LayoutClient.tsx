@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { MDXProvider } from '@mdx-js/react';
+import Callout from '@/components/Callout';
 import Footer from './Footer';
 import Header from './Header';
 import Sidebar from './Sidebar';
@@ -17,6 +19,10 @@ const LayoutClient: React.FC<LayoutClientProps> = ({ children, allTags }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const components = {
+    Callout,
+  };
+
   return (
     <>
       <Header onMenuClick={toggleSidebar} />
@@ -28,9 +34,12 @@ const LayoutClient: React.FC<LayoutClientProps> = ({ children, allTags }) => {
         allTags={allTags}
         onClose={toggleSidebar}
       />
-      <main className='pt-[72px] min-h-screen dark:bg-[var(--background-dark)] overflow-x-hidden'>
-        {children}
-      </main>
+      <MDXProvider components={components}>
+        <main className='pt-[72px] min-h-screen dark:bg-[var(--background-dark)] overflow-x-hidden'>
+          {children}
+        </main>
+      </MDXProvider>
+
       <Footer />
     </>
   );
