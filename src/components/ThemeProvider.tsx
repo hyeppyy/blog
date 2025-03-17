@@ -4,7 +4,7 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useState,
 } from 'react';
 
@@ -23,7 +23,7 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setMounted(true);
 
     const storedTheme = localStorage.getItem('theme');
@@ -40,7 +40,7 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!mounted) return;
 
     if (isDarkMode) {
