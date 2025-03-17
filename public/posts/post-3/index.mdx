@@ -38,7 +38,7 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useState,
 } from 'react';
 
@@ -57,7 +57,7 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setMounted(true);
 
     const storedTheme = localStorage.getItem('theme');
@@ -74,7 +74,7 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!mounted) return;
 
     if (isDarkMode) {
@@ -107,7 +107,7 @@ export default ThemeProvider;
 ### 초기 테마 설정
 
 ```
-useEffect(() => {
+useLayoutEffect(() => {
   setMounted(true);
 
   const storedTheme = localStorage.getItem('theme');
@@ -142,11 +142,11 @@ localStorage에 저장된 `theme` 값이 없으면, `window.matchMedia`를 통�
 
 ### 테마 적용
 
-useEffect를 사용해 `isDarkMode` 상태가 변경될 때마다 실행되도록 했다.
+useLayoutEffect 사용해 `isDarkMode` 상태가 변경될 때마다 실행되도록 했다.
 현재 선택된 테마를 localStorage에 저장하여 다음 방문 시에도 사용자의 선택을 기억할 수 있다.
 
 ```
-useEffect(() => {
+useLayoutEffect(() => {
   if (!mounted) return;
 
   if (isDarkMode) {
@@ -159,24 +159,24 @@ useEffect(() => {
 }, [isDarkMode, mounted]);
 ```
 
-### 하이드레이션 문제 해결(초기 깜빡임 방지)
+### 초기 깜빡임 방지
 
-Next.js에서 발생할 수 있는 하이드레이션 불일치 문제를 해결할 수 있는 코드이다.
-mounted 상태가 false일 때는 null을 반환함으로써 클라이언트 사이드 렌더링이 완전히 준비될 때까지 기다리고, 그 후에 정확한 테마를 적용하는 방식이다.
+아래의 이유로 useEffect 대신 useLayoutEffect를 사용했다. useLayoutEffect는 브라우저가 화면을 다시 그리기 전에 실행된다.
 
-```
-if (!mounted) {
-  return null;
-}
-```
+- useEffect 사용: 화면이 먼저 렌더링된 후 테마 변경됨 → 잠깐 깜빡임 발생
+- useLayoutEffect 사용: 테마 설정이 렌더링 전에 적용됨 → 깜빡임 없음
 
-또한 바로 위 코드에서, 컴포넌트가 마운트 된 후에만 DOM을 조작하도록 하여 초기 페이지 로드 시 발생할 수 있는 테마 깜빡임 현상을 방지한다.
+**useLayoutEffect의 성능저하 문제**
 
-```
-useEffect(() => {
-  if (!mounted) return;
-}, [isDarkMode, mounted]);
-```
+리액트 공식문서에서는 useLayoutEffect는 성능을 저하시킬 수 있어서 가능하면 useEffect를 사용하라고 되어있다.
+하지만 그럼 useLayoutEffect 사용은 언제하지, 만들어놓은 이유가 있지 않을까?해서 또 열심히 찾아봤다.
+
+useLayoutEffect에서 너무 무거운 작업을 하면 성능이 떨어질 수 있다. 그래서 비동기 작업에는 useEffect를 사용하고, 단순 DOM 조작에서는 useLayoutEffect를 사용한다.
+useLayoutEffect는 렌더링 전에 실행되지만, 오래 걸리는 작업이 없으면 성능 영향이 미미하다. 이러한 이유들로 useLayoutEffect을 사용해도 된다고 판단했다.
+
+- localStorage.getItem('theme') → 단순한 localStorage 읽기
+- window.matchMedia('(prefers-color-scheme: dark)') → 브라우저 기본 API 사용
+- document.documentElement.classList.add('dark') → 단순 DOM 조작
 
 ## 2. `ThemeContext` 적용하기
 
@@ -282,3 +282,4 @@ export default {
 
 - https://tailwindcss.com/docs/dark-mode
 - https://ko.react.dev/reference/react/useContext
+- https://f-lab.kr/insight/understanding-useeffect-and-uselayouteffect-in-react-20240618
