@@ -55,6 +55,7 @@ export default {
             p: {
               fontSize: '1.1rem',
               fontWeight: '300',
+              lineHeight: '2.1rem',
             },
           },
         },
