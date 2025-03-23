@@ -40,6 +40,10 @@
   .dark ::selection {
     @apply bg-[#f489b3] text-white;
   }
+  ol,
+  ul {
+    font-size: 1.1rem;
+  }
 }
 
 @layer components {
@@ -88,6 +92,10 @@ span[data-rehype-pretty-code-figure] code [data-line] span {
 .prose
   :where(tbody td, tfoot td):not(
     :where([class~='not-prose'], [class~='not-prose'] *)
+  ),
+.prose
+  :where(thead th:first-child):not(
+    :where([class~='not-prose'], [class~='not-prose'] *)
   ) {
   padding: 6px;
 }
@@ -96,4 +104,20 @@ span[data-rehype-pretty-code-figure] code [data-line] span {
 .prose
   :where(tbody tr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   border-bottom-color: var(--table-border-color);
+}
+
+/* 수평선(Horizontal Rule) 스타일링 */
+.prose :where(hr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.prose :where(li):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+.prose :where(ol):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
