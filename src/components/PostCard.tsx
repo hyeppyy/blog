@@ -13,7 +13,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, options = 'list' }) => (
   <Link className='group' href={`/${post.slug}`}>
     {options === 'list' ? (
       <li className='flex justify-between pt-[32px] pb-[32px] gap-[48px] border-b border-b-[var(--gray-01)] dark:border-b-[var(--gray-03-dark)] inline-block'>
-        <section className='flex flex-col'>
+        <section className='w-full flex flex-col'>
           <span className='text-xl md:text-3xl leading-[2rem] md:leading-[1.5em] font-semibold pb-[20px] dark:text-[var(--gray-dark)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary-dark)] transition-colors duration-200'>
             {post.title}
           </span>
@@ -27,7 +27,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, options = 'list' }) => (
         <Image
           src={post.thumbnail || '/images/default-thumbnail.png'}
           alt='썸네일 이미지'
-          className='rounded-3xl w-[124px] h-[86px] sm:w-[150px] sm:h-[100px] md:w-[264px] md:h-[150px]'
+          className='rounded-2xl md:rounded-3xl w-[124px] h-[86px] md:w-[264px] md:h-[150px]'
           width={264}
           height={150}
           priority

@@ -1,11 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 interface TagFilterProps {
   tags: string[];
-  selectedTags?: string[];
 }
 
 const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
@@ -13,21 +13,32 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const selectedTags = searchParams.get('tags')?.split(',') || [];
+  const initialSelectedTags = searchParams.get('tags')?.split(',') || [];
+  const [selectedTags, setSelectedTags] =
+    useState<string[]>(initialSelectedTags);
 
   const handleTagClick = (tag: string) => {
     const newSelectedTags = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
       : [...selectedTags, tag];
 
-    const newQueryString =
-      newSelectedTags.length > 0 ? `?tags=${newSelectedTags.join(',')}` : '';
-
-    router.push(`${pathname}${newQueryString}`);
+    setSelectedTags(newSelectedTags);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (selectedTags.length > 0) {
+      params.set('tags', selectedTags.join(','));
+    } else {
+      params.delete('tags');
+    }
+
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [selectedTags, router, pathname, searchParams]);
+
   return (
-    <div className='hidden sm:flex flex-wrap gap-[8px] pt-[32px] pb-[64px]'>
+    <div className='flex flex-wrap gap-[8px] pt-[32px] pb-[64px]'>
       {tags.map((tag) => (
         <button
           key={tag}

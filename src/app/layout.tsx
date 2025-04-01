@@ -5,6 +5,8 @@ import LayoutClient from '@/components/LayoutClient';
 import ThemeProvider from '@/components/ThemeProvider';
 import { getAllPosts } from '@/utils/posts';
 
+export const dynamic = 'force-static';
+
 export const metadata: Metadata = {
   title: "hyeppyy's blog",
   description: '개인 기술 블로그',

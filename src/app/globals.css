@@ -118,6 +118,11 @@ span[data-rehype-pretty-code-figure] code [data-line] span {
 }
 
 .prose :where(ol):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.prose :where(ul):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
 }
