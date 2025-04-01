@@ -1,17 +1,13 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Github, Search, Menu } from 'lucide-react';
+import { Github, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from './ThemeProvider';
 import ThemeToggleButton from './ThemeToggleButton';
 
-interface HeaderProps {
-  onMenuClick: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+const Header = () => {
   const router = useRouter();
   const { isDarkMode } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,12 +91,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               </button>
             </div>
           </form>
-          <button
-            onClick={onMenuClick}
-            className='flex sm:hidden hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)] dark:text-[var(--gray-01-dark)] transition-all duration-300 cursor-pointer'
-          >
-            <Menu />
-          </button>
         </div>
       </section>
     </header>

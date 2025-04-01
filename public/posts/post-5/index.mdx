@@ -1,0 +1,206 @@
+---
+title: 'Next.js 블로그에 SSG 도입하기'
+description: '블로그에 SSG를 도입하는 과정을 기록한 글입니다.'
+date: '2025년 04월 01일'
+thumbnail: '/images/thumbnail/5.png'
+tags: ['Next.js']
+---
+
+import Image from 'next/image';
+import Callout from '@/components/Callout';
+
+# Next.js 블로그에 SSG 도입하기
+
+<br />
+
+**기술 스택**
+
+- Next.js 버전 15
+- TypeScript
+- Tailwind CSS
+
+<Callout>
+  💡 SSG(Static Site Generation) <br />
+  빌드 시 HTML을 미리 생성해 배포하는 방식으로, 빠른 로딩 속도와 성능을
+  제공한다.
+</Callout>
+
+## SSG 도입 계기
+
+블로그의 초기 로딩 속도가 느렸고, 블로그처럼 페이지가 고정된 콘텐츠를 제공하는 서비스에는 SSG가 더 효율적이라고 판단하여 도입하게 되었다.
+
+<br />
+
+**SSG의 이점**
+
+1. **빠른 로딩 속도**<br />
+   서버에서 미리 페이지를 렌더링하여 정적 HTML 파일로 제공하므로, 사용자가 페이지를 요청할 때 동적으로 렌더링할 필요 없이 바로 HTML 파일을 전달할 수 있다. 이로 인해 빠른 로딩 속도를 제공한다.<br />SSG > RSC(Next.js 기본 렌더링 방식) > SSR > CSR 순으로 로딩 속도가 빠르다.
+
+2. **SEO 최적화**<br />
+   SSG로 생성된 페이지는 미리 렌더링된 HTML 파일을 제공하므로, 검색 엔진 크롤러가 쉽게 페이지를 읽고 인덱싱할 수 있다. 이를 통해 SEO 성능이 향상되며, 검색 결과에서 더 높은 순위를 받을 가능성이 높아진다. 특히 블로그와 같은 콘텐츠 기반 사이트에서는 SEO 최적화에 유리하다.
+
+## SSG 도입 과정
+
+### SSG 설정 방식
+
+SSG 설정 방식에는 크게 **두 가지**가 있다.
+
+1. **최상단에서 dynamic: 'force-static' 사용하기**<br />
+   `dynamic: 'force-static'`은 Next.js에서 레이아웃 또는 최상단 컴포넌트에서 설정하여, **해당 레이아웃을 SSG 방식으로 처리하도록 강제하는 방법**이다.
+   이렇게 설정하면 해당 레이아웃을 사용하는 **모든 페이지**가 SSG 방식으로 처리되기 때문에 하위 페이지에서 별도로 `getStaticProps`를 사용할 필요가 없다.
+
+2. **각 페이지에서 getStaticProps 사용하기**<br />
+   페이지별로 다른 렌더링 방식을 사용해야 한다면 `getStaticProps`를 페이지마다 적용해 준다.
+
+   <br />
+
+나의 경우 모든 페이지에서 SSG를 적용해야하기 때문에 첫 번째 방법을 사용했다.
+
+```js {title="src/app/layout.tsx"}
+export const dynamic = 'force-static';
+```
+
+### 트러블 슈팅 1: 필터링 후 새로고침 문제
+
+아래는 **수정 전 코드**이다. 해당 코드는 SSG를 적용하기 전에는 잘 동작했는데
+SSG 도입 후, 필터 선택 후 새로고침하면 포스트 목록이 필터링 되지 않고 전체 목록을 불러오는 현상이 발생했다.
+
+```js {title="src/components/TagFilter.tsx"}
+'use client';
+
+import { X } from 'lucide-react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+
+interface TagFilterProps {
+  tags: string[];
+  selectedTags?: string[];
+}
+
+const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const selectedTags = searchParams.get('tags')?.split(',') || [];
+
+  const handleTagClick = (tag: string) => {
+    const newSelectedTags = selectedTags.includes(tag)
+      ? selectedTags.filter((t) => t !== tag)
+      : [...selectedTags, tag];
+
+    const newQueryString =
+      newSelectedTags.length > 0 ? `?tags=${newSelectedTags.join(',')}` : '';
+
+    router.push(`${pathname}${newQueryString}`);
+  };
+  // 생략
+};
+
+export default TagFilter;
+```
+
+**발생 이유:** SSG와 클라이언트 상태 관리 불일치
+
+1. 태그 필터링이 URL의 쿼리 파라미터(?tags=태그1,태그2)에 저장됨
+2. 페이지를 새로고침하면, 브라우저는 서버에서 이미 생성된 정적 HTML을 다시 가져옴
+3. 이 정적 HTML은 미리 만들어졌기 때문에, URL 쿼리 파라미터를 알지 못하는 상태
+4. 따라서 URL에는 태그가 남아있지만, 페이지 콘텐츠는 필터링되지 않은 상태로 표시됨
+
+<br />
+
+**해결 방법 및 결과:** 페이지가 브라우저에 로드된 후, URL 쿼리를 확인하고 그에 맞게 콘텐츠를 필터링하는 단계를 추가하기
+
+- **로컬 상태 추가:** useState를 사용하여 선택된 태그들을 로컬 상태로 관리. 이를 통해 초기 렌더링에서 URL 쿼리 파라미터를 올바르게 반영
+- **태그 상태와 URL 동기화:** useEffect를 사용하여 선택된 태그가 변경될 때마다 URL 쿼리 파라미터를 업데이트
+
+```js {title="src/components/TagFilter.tsx"}
+
+const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // 쿼리스트링 업데이트 (선택된 태그 변경될 때만 실행)
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (selectedTags.length > 0) {
+      params.set('tags', selectedTags.join(','));
+    } else {
+      params.delete('tags');
+    }
+
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [selectedTags, router, pathname, searchParams]);
+  // 생략
+};
+
+export default TagFilter;
+```
+
+### 트러블 슈팅 2: 새로고침 시 깜빡임 문제
+
+아래 이미지와 같이 태그를 선택하고 새로고침을 하면, 전체 게시글 목록이 잠깐 보인 후 필터링된 게시글이 보이는 문제가 발생했다.
+
+<Image
+  src='/images/gif/5-1.gif'
+  alt='깜빡임 화면'
+  width={500}
+  height={300}
+  unoptimized={true}
+/>
+
+**발생 이유:** 정적 생성된 HTML과 클라이언트 렌더링 사이의 데이터 불일치
+
+- 빌드 시점에 정적으로 생성된 HTML에는 필터링되지 않은 전체 게시물이 포함됨
+- 클라이언트에서 하이드레이션 후에는 URL 파라미터에 따라 필터링된 게시물을 표시
+- 이로 인해 페이지 로드 시 전체 게시물이 잠시 보였다가 필터링된 게시물로 바뀌는 깜빡임 현상이 발생
+
+<br />
+
+**접근 과정:**
+
+**[첫 번째 접근법: 하이드레이션 상태 관리]**
+
+`isHydrated` 상태를 추가하여 하이드레이션 완료 후에만 컨텐츠를 표시하는 방법.
+하지만 이 방법은 근본적인 문제를 해결하지 못했음
+
+<br />
+**[두 번째 접근법: 로딩 상태 추가]**
+
+로딩 상태를 도입하여 하이드레이션 중에는 스켈레톤 UI를 표시하는 방법.
+이 방법도 완전한 해결책이 되지 못했음
+
+<br />
+
+**[최종 접근법: 서버와 클라이언트의 명확한 분리]**
+
+- SSG(Home 컴포넌트)에서는 필터링하지 않은 전체 데이터만 생성(서버에서는 모든 데이터를 미리 가져와서 HTML에 포함 시킴)
+- 클라이언트(PostList 컴포넌트)에서 페이지가 브라우저에 로드된 후 URL 파라미터를 확인하고 그에 맞게 이미 로드된 데이터를 필터링
+- useMemo와 같은 최적화 기법을 활용하여 효율적인 렌더링 구현
+
+  <br />
+
+**결과:** 서버와 클라이언트 역할을 명확하게 분리해 하이드레이션 과정에서의 불일치 문제를 근본적으로 해결
+
+<Image
+  src='/images/gif/5-2.gif'
+  alt='깜빡임 해결 화면'
+  width={500}
+  height={300}
+  unoptimized={true}
+/>
+
+<br />
+
+[전체 코드 확인하기](https://github.com/hyeppyy/blog)
+
+## 느낀점
+
+1. Next.js의 다양한 렌더링 방식에 대한 이해
+
+- 각 렌더링 방식(SSG, CSR, SSR)의 특성과 장단점을 이해하고, 페이지의 목적과 데이터 특성에 따라 적절한 방식을 선택하는 것이 중요함을 깨달았다.
+
+2. 아키텍처적 관점에서의 책임 분리(서버, 클라이언트)
+
+- 서버와 클라이언트의 역할을 명확히 구분해 하이드레이션 불일치 문제를 해결하는 방법을 배웠다.

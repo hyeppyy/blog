@@ -72,11 +72,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
           에 대한 검색 결과 ({searchResults.length}건)
         </span>
       </div>
-      <PostList
-        allTags={allTags}
-        filteredPosts={searchResults}
-        showTags={false}
-      />
+      <PostList allTags={allTags} allPosts={searchResults} />
     </>
   );
 };

@@ -2,13 +2,14 @@
 
 import NextImage from 'next/image';
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
+import Callout from './Callout'; // 이전에 MDXProvider에서 사용하던 글로벌 컴포넌트
 
 interface MDXContentClientProps {
   content: MDXRemoteSerializeResult;
 }
 
 const components = {
-  Image: (props: any) => (
+  Image: (props: React.ComponentProps<typeof NextImage>) => (
     <NextImage
       {...props}
       style={{
@@ -19,6 +20,7 @@ const components = {
       unoptimized
     />
   ),
+  Callout,
 };
 
 const MDXContentClient = ({ content }: MDXContentClientProps) => (
