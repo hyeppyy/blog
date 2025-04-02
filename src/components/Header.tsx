@@ -3,15 +3,23 @@ import React, { useEffect, useState } from 'react';
 import { Github, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from './ThemeProvider';
 import ThemeToggleButton from './ThemeToggleButton';
 
 const Header = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isDarkMode } = useTheme();
-  const [searchQuery, setSearchQuery] = useState('');
+
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('query') || ''
+  );
   const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    setSearchQuery(searchParams.get('query') || '');
+  }, [searchParams]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +27,6 @@ const Header = () => {
     if (!searchQuery.trim()) return;
 
     router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
-    setSearchQuery('');
   };
 
   useEffect(() => {
