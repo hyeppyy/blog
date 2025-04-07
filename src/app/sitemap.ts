@@ -9,10 +9,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 1,
   }));
 
-  const routes = ['', '/search'].map((route) => ({
-    url: `https://www.hyeppyy.com${route}`,
-    priority: 1,
-  }));
+  const routes = [
+    { url: 'https://www.hyeppyy.com/', priority: 0.8 },
+    { url: 'https://www.hyeppyy.com/search', priority: 0.5 },
+  ];
 
   return [...routes, ...posts];
 }

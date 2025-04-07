@@ -1,6 +1,3 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
@@ -13,29 +10,26 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const initialSelectedTags = searchParams.get('tags')?.split(',') || [];
-  const [selectedTags, setSelectedTags] =
-    useState<string[]>(initialSelectedTags);
+  const selectedTags = searchParams.getAll('tag');
 
   const handleTagClick = (tag: string) => {
-    const newSelectedTags = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag];
-
-    setSelectedTags(newSelectedTags);
-  };
-
-  useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (selectedTags.length > 0) {
-      params.set('tags', selectedTags.join(','));
+    if (selectedTags.includes(tag)) {
+      params.delete('tag');
+
+      selectedTags.forEach((selectedTag) => {
+        if (selectedTag !== tag) {
+          params.append('tag', selectedTag);
+        }
+      });
     } else {
-      params.delete('tags');
+      params.append('tag', tag);
     }
 
-    router.replace(`${pathname}?${params.toString()}`);
-  }, [selectedTags, router, pathname, searchParams]);
+    params.set('page', '1');
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <div className='flex flex-wrap gap-[8px] pt-[32px] pb-[64px]'>
