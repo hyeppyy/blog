@@ -31,7 +31,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className='flex items-center justify-center gap-2 mt-4 pt-[32px]'>
-      {startPage !== currentPage && (
+      {currentPage > 1 && (
         <button
           onClick={() => onPageChange(1)}
           className='px-3 py-1 rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
@@ -40,7 +40,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
       )}
 
-      {startPage !== currentPage && (
+      {currentPage > 1 && (
         <button
           onClick={() => onPageChange(currentPage - 1)}
           className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
@@ -59,7 +59,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
       ))}
 
-      {endPage !== currentPage && (
+      {currentPage < totalPages && (
         <button
           onClick={() => onPageChange(currentPage + 1)}
           className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
@@ -68,7 +68,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
       )}
 
-      {endPage !== currentPage && (
+      {currentPage < totalPages && (
         <button
           onClick={() => onPageChange(totalPages)}
           className='px-3 py-1 rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'

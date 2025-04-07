@@ -1,0 +1,174 @@
+---
+title: '블로그 SEO 최적화: sitemap.xml과 robots.txt 설정'
+description: '블로그 검색엔진을 최적화하는 여러 방법'
+date: '2025년 04월 07일'
+thumbnail: '/images/thumbnail/6.png'
+tags: ['Next.js']
+---
+
+## 왜 sitemap.xml과 robots.txt가 중요할까?
+
+블로그 글을 검색 결과 상단에 노출시키기 위해선 검색 엔진 최적화(SEO)가 중요하다.
+특히 `sitemap.xml`과 `robots.txt`은 **검색 엔진 크롤러가 웹사이트를 효과적으로 탐색하고 콘텐츠를 올바르게 인덱싱할 수 있도록 도와준다.**
+
+- **sitemap.xml:** 웹사이트의 모든 페이지 목록과 메타데이터를 포함하는 XML 파일. 블로그에 어떤 페이지가 있는지 검색 엔진에 제공해
+  구글, 네이버 등 검색 봇이 효율적으로 콘텐츠를 수집할 수 있도록 함
+
+- **robots.txt:** 검색 엔진 크롤러에게 웹사이트의 어느 부분을 크롤링해도 되는지, 어느 부분은 접근하면 안 되는지 알려주는 텍스트 파일
+
+### 🔍 검색 엔진이 사이트를 수집하는 과정
+
+sitemap 속성을 통해 `robots.txt` 파일에서 `sitemap.xml`의 위치를 지정함으로써, 두 파일이 서로 연계되어 작동한다.
+검색 엔진은 `robots.txt` 파일을 읽고, 거기서 참조된 `sitemap.xml` 파일을 찾아 사이트의 구조를 더 효율적으로 파악한다.
+
+<br />
+
+1. **크롤링(Crawling)**
+
+- 검색 엔진의 크롤러(bot) 가 웹사이트를 방문해 HTML, 링크 등을 탐색하는 과정
+- 이때 가장 먼저 접근하는 파일이 `robots.txt`
+
+2. **sitemap 확인 (선택적)**
+
+- `robots.txt` 파일에 `Sitemap:` 속성이 있으면 해당 경로로 이동해서 sitemap.xml 파일 확인
+
+3. **인덱싱(Indexing)**
+
+- 크롤링해서 수집한 콘텐츠를 검색 엔진 데이터베이스에 저장하는 과정
+- 저장된 페이지는 검색 결과에 노출될 수 있는 상태가 됨
+
+4. **랭킹(Ranking)**
+
+- 검색어와 관련된 페이지 중에서 어떤 걸 먼저 보여줄지 결정하는 과정
+- SEO 최적화가 여기에 영향을 줌
+
+## sitemap.xml 생성
+
+Next.js 13부터는 **sitemap.xml을 동적으로 생성하지만, 정적 파일처럼 처리된다.**
+sitemap.xml은 서버에서 매번 getAllPosts()와 같은 데이터를 기반으로 동적으로 생성되지만, Next.js 13부터는 이를 정적 파일처럼 처리해주는 라우팅 시스템을 제공한다.
+즉, 게시글이나 상품, 사용자 프로필 등 콘텐츠가 지속적으로 추가되거나 변경되더라도 실시간으로 sitemap에 반영할 수 있으며, 동시에 /sitemap.xml 경로에서 마치 정적 파일처럼 접근할 수 있게 만들어준다.
+이 덕분에 별도의 API 라우트나 웹 서버 설정 없이도 검색 엔진이 sitemap을 쉽게 탐색할 수 있다.
+
+### 예전 방식(Next.js 12 이하) VS 현재 방식(Next.js 13 이상)
+
+- **예전 방식:** pages/api/sitemap.ts 같은 API Route를 만들어서 API 형태로 동적으로 sitemap을 반환. URL도 /api/sitemap 이런 식이었고, nginx 설정으로 /sitemap.xml로 우회시켜야 하는 번거로움도 있었음
+- **현재 방식:** app/sitemap.xml/route.ts 파일을 만들면, Next.js가 이걸 /sitemap.xml이라는 정적 파일처럼 인식. 즉, 작성은 코드로 하지만, 실제로는 서버에서 직접 응답해주는 정적 파일처럼 취급
+
+아래 코드는 Next.js에서 동적으로 sitemap을 생성하는 방법을 보여준다. 이 코드를
+src/app/sitemap.ts 파일에 추가하면, **Next.js는 자동으로 /sitemap.xml
+엔드포인트를 생성한다.**
+
+```js {title="src/app/sitemap.ts"}
+import type { MetadataRoute } from 'next';
+import { getAllPosts } from '@/utils/posts';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const allPosts = await getAllPosts();
+
+  const posts = allPosts.map((post) => ({//동적 경로
+    url: `https://www.hyeppyy.com/${post.slug}`,
+    priority: 1,
+  }));
+
+  const routes = [//정적 경로
+    { url: 'https://www.hyeppyy.com/', priority: 0.8 },
+    { url: 'https://www.hyeppyy.com/search', priority: 0.5 },
+  ];
+
+  return [...routes, ...posts];
+}
+```
+
+**코드 설명**
+
+1. getAllPosts 함수를 통해 블로그의 모든 포스트를 가져온다.
+2. 각 포스트에 대해 URL과 우선순위 정보를 포함한 객체를 생성한다.
+3. 메인 페이지와 검색 페이지 같은 정적 경로도 sitemap에 추가한다.
+4. 최종적으로 모든 경로를 합쳐 sitemap 객체 배열을 반환한다.
+
+<br />
+**priority**는 sitemap.xml에서 **각 URL이 웹사이트 내에서 얼마나 중요한지를 검색
+엔진에게 힌트로 제공하기 위한 값**이다. 이 값은 0.0부터 1.0까지 설정할 수
+있으며, **숫자가 높을수록 상대적으로 중요한 페이지**임을 의미한다.
+
+**그런데 모든 페이지가 priority: 1.0이면 어떨까?** 검색 엔진은 "다 중요하다는 거네? 그럼 이 값은 참고할 필요가 없겠군!" 하고 priority를 무시할 가능성이 높아진다.
+그러므로 모든 페이지에 동일한 priority 값을 넣는 건 큰 의미가 없다.
+
+<br />
+
+**priority 예시**
+| Priority 값 | 페이지 유형 |
+|-------------|-----------------------------------------------|
+| `1.0` | 홈, 카테고리 메인, 주요 랜딩 페이지 |
+| `0.8` | 최신 글, 인기 글 |
+| `0.5` | 일반 게시글 |
+| `0.3` | 오래된 글, 태그 페이지, 검색 페이지 등 |
+| `0.0` | 크롤링 대상이 아닌 페이지 (robots.txt에서 제외함) |
+
+나의 경우엔 각 게시글 유입이 가장 많기 때문에 게시글의 우선순위를 가장 높게 줬다.
+
+## robots.txt 생성
+
+Next.js 13 이상부터는 app 디렉토리를 기반으로 라우팅이 구성되기 때문에, 정적 파일처럼 보이는 `robots.txt`도 쉽게 설정할 수 있다.
+
+```js {title="src/app/robots.ts"}
+import type { MetadataRoute } from 'next';
+
+const robots = (): MetadataRoute.Robots => ({
+  rules: {
+    userAgent: '*',
+    allow: '/',
+  },
+  sitemap: 'https://www.hyeppyy.com/sitemap.xml',
+  host: 'https://www.hyeppyy.com',
+});
+
+export default robots;
+```
+
+**코드 설명**
+
+1. **MetadataRoute 타입 임포트:** Next.js의 타입 시스템을 사용하여 robots.txt의 구조를 정의한다.
+2. **robots 함수:** MetadataRoute.Robots 타입을 반환하는 함수를 정의한다.
+3. **rules 객체:**
+
+- **userAgent: '\*':** 모든 검색 엔진 크롤러에게 적용되는 규칙이다.
+- **allow: '/':** 모든 크롤러가 사이트의 모든 페이지에 접근할 수 있도록 허용한다. 루트 디렉토리('/')부터 시작하는 모든 경로를 크롤링할 수 있다.
+
+4. **sitemap:** 검색 엔진에게 sitemap.xml 파일의 위치를 알려준다. 이를 통해 크롤러가 사이트의 모든 페이지를 더 효율적으로 찾을 수 있다.
+5. **host:** 웹사이트의 기본 URL을 지정한다. 이는 검색 엔진이 사이트의 기본 도메인을 인식하는 데 도움을 준다.
+
+### 실제 생성되는 robots.txt
+
+위 코드가 빌드되면 다음과 같은 robots.txt 파일이 생성된다.
+robots.txt 파일이 올바르게 설정되었는지 확인하려면, 배포 후 `{배포된 주소}/robots.txt`에서 직접 확인하거나 Google Search Console과 같은 도구를 활용할 수 있다.
+
+```js
+User-agent: *
+Allow: /
+
+Sitemap: 배포주소/sitemap.xml
+Host: 배포주소
+```
+
+### 특정 경로 차단하기
+
+만약 특정 경로를 크롤링에서 제외하고 싶다면, `disallow` 규칙을 추가할 수 있다.
+이를 통해 로그인, 관리자 페이지처럼 공개되지 않아야 할 경로는 크롤링을 막을 수 있다.
+아래는 예시코드로 이렇게 설정하면 /private/, /admin/, /api/ 경로와 그 하위 경로는 크롤링되지 않는다.
+
+```js {title="src/app/robots.ts"}
+rules: {
+  userAgent: '*',
+  allow: '/',
+  disallow: ['/private/', '/admin/', '/api/'],
+},
+```
+
+<a
+  href='https://github.com/hyeppyy/blog/blob/develop/src/app/sitemap.ts'
+  target='_blank'
+  rel='noopener noreferrer'
+>
+  자세한 깃허브 코드 보기 →
+</a>

@@ -123,7 +123,7 @@ const DetailPage = async ({ params }: ParamsProps) => {
 
           {nextPost && (
             <Link href={`/${nextPost.slug}`} className='w-full'>
-              <button className='flex flex-col gap-[6px] items-end w-full px-[14px] py-[16px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] hover:border-[var(--primary)] dark:hover:border-[var(--primary-dark)] transition-all duration-300'>
+              <button className='min-h-full flex flex-col gap-[6px] items-end w-full px-[14px] py-[16px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] hover:border-[var(--primary)] dark:hover:border-[var(--primary-dark)] transition-all duration-300'>
                 <span className='text-sm text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
                   다음
                 </span>
