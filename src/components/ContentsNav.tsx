@@ -92,7 +92,6 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ headings }) => {
           const indentPixels = indentLevel * 16;
           const id = slugify(heading.text);
 
-          console.log(heading.id, 'heading.id');
           const isActive =
             manualActiveId === id || (!manualActiveId && activeId === id);
 
