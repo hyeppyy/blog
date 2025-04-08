@@ -6,7 +6,6 @@ import Header from './Header';
 
 interface LayoutClientProps {
   children: React.ReactNode;
-  allTags: string[];
 }
 
 const LayoutClient: React.FC<LayoutClientProps> = ({ children }) => (
@@ -17,7 +16,6 @@ const LayoutClient: React.FC<LayoutClientProps> = ({ children }) => (
         {children}
       </main>
     </MDXProvider>
-
     <Footer />
   </>
 );

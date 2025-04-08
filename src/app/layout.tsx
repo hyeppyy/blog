@@ -3,9 +3,6 @@ import localFont from 'next/font/local';
 import './globals.css';
 import LayoutClient from '@/components/LayoutClient';
 import ThemeProvider from '@/components/ThemeProvider';
-import { getAllPosts } from '@/utils/posts';
-
-export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: "hyeppyy's blog",
@@ -32,28 +29,18 @@ const pretendard = localFont({
   variable: '--font-pretendard',
 });
 
-const RootLayout = async ({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) => {
-  const allPosts = await getAllPosts();
-
-  const allTagsSet = new Set<string>();
-  allPosts.forEach((post) => {
-    post.tags.forEach((tag: string) => allTagsSet.add(tag));
-  });
-  const allTags = Array.from(allTagsSet);
-
-  return (
-    <html lang='ko'>
-      <body className={`${pretendard.variable} font-pretendard`}>
-        <ThemeProvider>
-          <LayoutClient allTags={allTags}>{children} </LayoutClient>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
-};
+}>) => (
+  <html lang='ko'>
+    <body className={`${pretendard.variable} font-pretendard`}>
+      <ThemeProvider>
+        <LayoutClient>{children}</LayoutClient>
+      </ThemeProvider>
+    </body>
+  </html>
+);
 
 export default RootLayout;

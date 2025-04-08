@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface TagButtonProps {
   tag: string;
@@ -8,9 +8,10 @@ interface TagButtonProps {
 
 const TagButton: React.FC<TagButtonProps> = ({ tag }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleClick = () => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set('tags', tag);
     router.push(`/?${params.toString()}`);
   };
