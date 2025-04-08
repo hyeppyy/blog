@@ -75,8 +75,8 @@ const DetailPage = async ({ params }: ParamsProps) => {
 
   return (
     <>
-      <div className='flex flex-col pt-[64px] pb-[20px] w-full lg:w-[1200px] lg:max-w-[1200px] mx-auto px-[20px] sm:px-[20px] lg:px-[200px]'>
-        <span className='text-4xl md:text-5xl leading-[2.8rem] md:leading-[4rem] font-semibold pb-[48px] text-[var(--black)] dark:text-[var(--gray-dark)]'>
+      <div className='flex flex-col pt-[32px] md:pt-[64px] pb-[20px] w-full lg:w-[1200px] lg:max-w-[1200px] mx-auto px-[20px] sm:px-[20px] lg:px-[200px]'>
+        <span className='text-4xl md:text-5xl leading-[2.8rem] md:leading-[4rem] font-semibold pb-[24px] md:pb-[48px] text-[var(--black)] dark:text-[var(--gray-dark)]'>
           {post.title}
         </span>
         <span className='pb-[24px] text-[var(--gray-02)] dark:text-[var(--gray-02-dark)]'>
@@ -94,6 +94,7 @@ const DetailPage = async ({ params }: ParamsProps) => {
               alt='썸네일 이미지'
               className='rounded-3xl object-cover'
               fill
+              sizes='100vw'
               priority
             />
           </figure>

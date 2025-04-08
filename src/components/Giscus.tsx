@@ -19,7 +19,6 @@ const Giscus = () => {
     scriptElem.setAttribute('data-category-id', 'DIC_kwDON6ulVc4CnGax');
     scriptElem.setAttribute('data-mapping', 'pathname');
     scriptElem.setAttribute('data-strict', '0');
-    scriptElem.setAttribute('data-reactions-enabled', '0');
     scriptElem.setAttribute('data-emit-metadata', '0');
     scriptElem.setAttribute('data-input-position', 'top');
     scriptElem.setAttribute('data-theme', theme);

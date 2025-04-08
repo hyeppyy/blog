@@ -14,6 +14,13 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ headings }) => {
   const [manualActiveId, setManualActiveId] = useState<string | null>(null);
   const pathname = usePathname();
 
+  const slugify = (text: string) =>
+    text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\p{L}\p{N}\s-]/gu, '')
+      .replace(/\s+/g, '-');
+
   useEffect(() => {
     const handleScroll = () => {
       if (isScrolling) return;
@@ -83,10 +90,11 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ headings }) => {
         {headings.map((heading, index) => {
           const indentLevel = heading.level - minLevel;
           const indentPixels = indentLevel * 16;
+          const id = slugify(heading.text);
 
+          console.log(heading.id, 'heading.id');
           const isActive =
-            manualActiveId === heading.id ||
-            (!manualActiveId && activeId === heading.id);
+            manualActiveId === id || (!manualActiveId && activeId === id);
 
           return (
             <li
@@ -95,7 +103,7 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ headings }) => {
               className='transition-colors duration-200'
             >
               <button
-                onClick={() => scrollToHeading(heading.id)}
+                onClick={() => scrollToHeading(id)}
                 className={`text-left w-full ${
                   isActive
                     ? 'text-[var(--primary)] dark:text-[var(--primary-dark)]'
