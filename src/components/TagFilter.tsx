@@ -32,7 +32,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
   };
 
   return (
-    <div className='flex flex-wrap gap-[8px] pt-[32px] pb-[64px]'>
+    <div className='flex flex-wrap gap-[8px] pt-[16px] md:pt-[32px] pb-[24px] md:pb-[64px]'>
       {tags.map((tag) => (
         <button
           key={tag}

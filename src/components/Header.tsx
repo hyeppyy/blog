@@ -40,7 +40,7 @@ const Header = () => {
 
   return (
     <header
-      className={`z-50 flex items-center pt-[0px] pr-[20px] pb-[0px] pl-[20px] h-[56px] fixed top-0 left-0 right-0 bg-white/60 backdrop-blur-md z-50 transition-shadow dark:bg-[var(--background-dark)] ${
+      className={`z-50 flex items-center pt-[0px] pr-[20px] pb-[0px] pl-[20px] h-[56px] fixed top-0 left-0 right-0 bg-white/60 backdrop-blur-lg z-50 transition-shadow dark:bg-[var(--background-dark)] ${
         hasScrolled ? 'shadow-md' : ''
       }`}
     >

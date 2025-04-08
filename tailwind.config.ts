@@ -53,9 +53,9 @@ export default {
               },
             },
             p: {
-              fontSize: '1.1rem',
-              fontWeight: '300',
-              lineHeight: '2.1rem',
+              fontSize: '1.0625rem',
+              fontWeight: '200',
+              lineHeight: '1.8rem',
             },
           },
         },

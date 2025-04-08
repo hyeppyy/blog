@@ -24,7 +24,7 @@ const components = {
 };
 
 const MDXContentClient = ({ content }: MDXContentClientProps) => (
-  <div className='prose max-w-none pt-[64px] dark:prose-invert'>
+  <div className='prose max-w-none pt-[32px] md:pt-[64px] dark:prose-invert'>
     <MDXRemote {...content} components={components} />
   </div>
 );
