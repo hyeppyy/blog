@@ -36,6 +36,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [] }) => {
       {tags.map((tag) => (
         <button
           key={tag}
+          aria-label='태그 필터'
           onClick={() => handleTagClick(tag)}
           className={`flex py-2 px-4 text-sm rounded-full transition-colors items-center gap-[4px] border-[1px] dark:border-transparent ${
             selectedTags.includes(tag)
