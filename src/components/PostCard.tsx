@@ -1,4 +1,3 @@
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PostBaseProps } from '@/types/post';
@@ -10,9 +9,13 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, options = 'list' }) => (
-  <Link className='group' href={`/${post.slug}`}>
+  <Link
+    className='group'
+    href={`/${post.slug}`}
+    aria-label='포스트 상세 페이지로 이동하는 버튼'
+  >
     {options === 'list' ? (
-      <li className='flex justify-between pt-[24px] md:pt-[32px] pb-[24px] md:pb-[32px] gap-[16px] md:gap-[48px] border-b border-b-[var(--gray-01)] dark:border-b-[var(--gray-03-dark)] inline-block'>
+      <div className='flex justify-between pt-[24px] md:pt-[32px] pb-[24px] md:pb-[32px] gap-[16px] md:gap-[48px] border-b border-b-[var(--gray-01)] dark:border-b-[var(--gray-03-dark)] inline-block'>
         <section className='w-full flex flex-col'>
           <span className='break-keep break-words text-lg md:text-3xl leading-[2rem] md:leading-[1.5em] font-semibold pb-[20px] dark:text-[var(--gray-dark)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary-dark)] transition-colors duration-200'>
             {post.title}
@@ -34,7 +37,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, options = 'list' }) => (
             priority
           />
         )}
-      </li>
+      </div>
     ) : (
       <div className='relative flex flex-col min-h-full border rounded-2xl shadow-md overflow-hidden transition hover:shadow-lg dark:bg-[var(--gray-04-dark)] dark:border-transparent'>
         {post.thumbnail && (

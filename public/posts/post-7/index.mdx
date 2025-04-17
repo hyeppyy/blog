@@ -1,0 +1,535 @@
+---
+title: 'Zustand로 전역 상태 관리하는 Dialog 모달 컴포넌트 만들기'
+description: 'HTML5 Dialog 요소와 Zustand를 활용해 재사용 가능한 모달 시스템을 구축하는 방법과 전역 상태 관리 시 발생하는 문제 해결 과정을 공유합니다.'
+date: '2025년 04월 17일'
+thumbnail: '/images/thumbnail/7.png'
+tags: ['React', 'Zustand']
+---
+
+import Image from 'next/image';
+import Callout from '@/components/Callout';
+
+# Zustand로 전역 상태 관리하는 Dialog 모달 컴포넌트 만들기
+
+React에서 모달을 구현하는 방법은 정말 다양하다. 이 전까지는 모달을 만들때 **div + position fixed**의 조합으로 구현했는데, `<dialog>` 태그를 이용해서 만들 수 있다는 것을 알게되었다.
+이번 글에서는 `<dialog>`와 상태 관리 라이브러리인 Zustand를 활용해 전역에서 제어 가능한 모달 컴포넌트를 만들어 보려고 한다.
+
+<br />
+
+**기술 스택**
+
+- React
+- TypeScript
+- Zustand
+- Emotion CSS
+
+<br />
+
+**고려사항**
+
+모달을 만들기 전 고려했던 점은 다음과 같다.
+
+1. Zustand를 이용한 전역 모달 상태 관리
+2. 다양한 넓이의 모달 지원
+
+## dialog 요소란?
+
+`<dialog>` 요소는 HTML5에서 도입된 대화 상자(dialog)를 표현하는 태그이다. show() 메서드를 사용하면 비모달(non-modal)로, showModal() 메서드를 사용하면 모달(modal)로 동작한다.
+
+1. **모달 모드(Modal mode)- showModal() 메서드로 열었을 때**
+
+- 페이지의 나머지 부분과 상호작용할 수 없다.
+- 배경이 어두워지거나 흐려지게 할 수 있다(::backdrop 가상 요소).
+- 사용자가 작업을 완료하거나 취소해야만 계속 진행할 수 있다.
+
+2. **비모달 모드(Non-modal mode) - show() 메서드로 열었을 때**
+
+- 페이지의 다른 요소들과 계속 상호작용할 수 있다.
+- 배경이 어두워지지 않는다.
+
+### 특징
+
+`<dialog>`는 다음과 같은 특징을 가지고 있다.
+
+<br />
+
+1. **네이티브 모달 기능 지원 (showModal(), close() 메서드)**
+
+`<dialog>`는 모달 기능을 기본적으로 지원한다. 이를 통해 기존에 라이브러리나 직접 구현을 통해 해결하던 많은 모달 관련 기능들을 네이티브 요소로
+쉽게 구현할 수 있다. 이러한 네이티브 기능들은 성능이 우수하고, 브라우저 표준을 따르며, 추가 라이브러리 없이도 모달 구현에 필요한 대부분의 기능을 제공한다.
+
+- showModal(): 이 메서드를 호출하면 모달 모드로 대화상자를 표시한다.
+
+```js
+const dialog = document.querySelector('dialog');
+dialog.showModal(); // 모달 모드로 열기
+```
+
+- show(): 이 메서드를 호출하면 비모달(non-modal) 모드로 대화상자를 표시한다.
+
+```js
+dialog.show(); // 비모달 모드로 열기 (배경 클릭 가능)
+```
+
+- close(): 대화상자를 닫는다. 선택적으로 반환값을 설정할 수 있다.
+
+```js
+dialog.close(); // 단순히 닫기
+dialog.close('확인됨'); // 반환값과 함께 닫기
+```
+
+- open 속성: 모달 창이 열려 있는지 확인하거나 조작할 수 있다.
+
+```js
+console.log(dialog.open); // true 또는 false
+dialog.open = true; // 직접 열기 (show 또는 showModal과는 다름)
+```
+
+2. **자동 포커스 관리**
+
+`<dialog>`는 모달이 열릴 때 포커스를 자동으로 관리한다.
+
+- 모달이 열리면 자동으로 내부의 첫 번째 포커스 가능한 요소에 포커스를 설정힌다.
+- 모달 내에서 Tab 키를 사용한 포커스 이동이 모달 내부로 제한된다(포커스 트랩).
+- 특정 요소에 초기 포커스를 지정하고 싶다면 아래와 같이 작성한다.
+
+```js
+dialog.showModal();
+document.getElementById('firstInput').focus();
+```
+
+3. **::backdrop 가상 요소를 통한 배경 스타일링**
+
+모달이 showModal() 메서드로 열릴 때, 브라우저는 자동으로 ::backdrop라는 가상 요소를 생성한다.
+이 가상 요소는 모달 뒤의 배경을 어둡게 처리하거나 스타일링하는 데 사용된다.
+
+```js
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은색 배경 */
+  backdrop-filter: blur(3px); /* 배경 블러 효과 */
+}
+
+/* 애니메이션 추가 */
+dialog[open]::backdrop {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+```
+
+4. **접근성 기능 내장 (ESC 키로 닫기, 초점 트랩 등)**
+
+`<dialog>`는 접근성을 고려한 여러 기능을 기본적으로 제공한다.
+
+- ESC 키로 닫기: 사용자가 ESC 키를 누르면 모달이 자동으로 닫힌다.
+- 자동 ARIA 속성: 브라우저는 모달에 적절한 ARIA 역할과 속성을 자동으로 적용한다.
+
+```js
+<!-- 브라우저가 자동으로 role="dialog"와 aria-modal="true" 특성을 추가합니다 -->
+<dialog id="myDialog">내용</dialog>
+```
+
+- form 요소와 통합: 모달 내부에 method="dialog"를 가진 폼을 사용하면, 폼 제출 시 모달이 자동으로 닫힌다.
+
+```js
+<dialog id='confirmDialog'>
+  <p>정말 삭제하시겠습니까?</p>
+  <form method='dialog'>
+    <button value='cancel'>취소</button>
+    <button value='confirm'>확인</button>
+  </form>
+</dialog>
+```
+
+### 기존 방식과 비교
+
+| 항목                    | 기존 방식 (`div + position: fixed`)         | `<dialog>` 요소 사용 방식                          |
+| ----------------------- | ------------------------------------------- | -------------------------------------------------- |
+| 기본 제공 기능          | 없음 (직접 구현 필요)                       | 모달/비모달 모드, showModal(), close() 메서드 지원 |
+| 접근성                  | 직접 구현해야 함 (ESC 닫기, 포커스 트랩 등) | 기본적으로 접근성 기능 내장                        |
+| 배경 처리 (`backdrop`)  | 별도 요소 및 스타일링 필요                  | `::backdrop` 가상 요소로 기본 지원                 |
+| 자동 포커스 관리        | 직접 포커스 이동 처리 필요                  | 자동 포커스 이동 지원                              |
+| 닫기 처리 (`ESC` 키 등) | 이벤트 리스너 직접 구현 필요                | 기본적으로 ESC 키로 닫기 지원                      |
+| 브라우저 지원           | 모든 브라우저에서 가능                      | 최신 브라우저에서만 지원 (폴리필 필요 가능성 있음) |
+
+## 폴더 구조
+
+```js
+components/
+  └── Modal.tsx
+stores/
+  └── useModalStore.ts
+```
+
+## Zustand로 상태 관리하기
+
+아래는 모달 상태를 관리하는 Zustand 스토어 구현 코드이다.
+
+```js {title="src/stores/useModalStore.ts"}
+import { create } from 'zustand';
+
+interface ModalConfig {
+  isOpen: boolean;
+  width?: number;
+}
+
+interface ModalStateProps {
+  modals: Record<string, ModalConfig>;
+  openModal: (id: string, width?: number) => void;
+  closeModal: (id: string) => void;
+}
+
+const useModalStore = create<ModalStateProps>((set) => ({
+  modals: {},
+  openModal: (id: string, width: number = 336) =>
+    set((state: ModalStateProps) => ({
+      modals: {
+        ...state.modals,
+        [id]: { isOpen: true, width },
+      },
+    })),
+  closeModal: (id: string) =>
+    set((state: ModalStateProps) => ({
+      modals: {
+        ...state.modals,
+        [id]: { ...state.modals[id], isOpen: false },
+      },
+    })),
+}));
+
+export default useModalStore;
+```
+
+스토어는 다음과 같은 기능을 제공한다.
+
+- **modals:** 각 모달의 상태를 ID를 키로 하여 저장하는 객체
+- **openModal:** 특정 ID의 모달을 열고, 선택적으로 너비를 설정 가능. openModal('sampleModal', 400)처럼 호출하면,
+  'sampleModal'이라는 id를 가진 모달이 열리고 너비는 400px로 설정됨. 넓이를 설정하지 않으면 기본값인 336px가 적용됨
+- **closeModal:** 특정 ID의 모달을 닫음. closeModal('sampleModal')처럼 호출하면 해당 모달이 닫히게 됨
+
+각 모달은 ID로 식별되며, 해당 ID를 통해 애플리케이션의 어느 부분에서든 모달을 열고 닫을 수 있다.
+
+## 모달 컴포넌트 구현
+
+아래는 dialog와 Zustand 스토어를 결합한 모달 컴포넌트 구현 코드이다.
+
+```js {title="src/components/Modal.tsx"}
+import { useEffect, useRef } from 'react';
+import { css } from '@emotion/react';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import IconButton from '@/components/IconButton';
+import { COLOR } from '@/constants/color';
+import useDetailModal from '@/stores/useModalStore';
+
+interface ModalProps {
+  content?: React.ReactElement;
+  id: string;
+}
+
+export const Modal: React.FC<ModalProps> = ({ content, id }) => {
+  const { closeModal } = useDetailModal();
+  const modal = useDetailModal((state) => state.modals[id]);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (modal?.isOpen) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [modal?.isOpen, id]);
+
+  if (!modal?.isOpen) return null;
+
+  return (
+    <dialog ref={dialogRef} css={modalStyle(modal.width)}>
+      <div className='close-btn'>
+        <IconButton
+          IconComponent={CloseOutlinedIcon}
+          iconBgSize='lg'
+          shape='none'
+          handleClick={() => closeModal(id)}
+        />
+      </div>
+      {content}
+    </dialog>
+  );
+};
+
+const modalStyle = (width?: number) => css`
+  position: fixed;
+  background: ${COLOR.WHITE};
+  border-radius: 4px;
+  border: 0;
+  padding: 24px;
+  width: ${width ? `${width}px` : '336px'};
+
+  .close-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+  }
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+`;
+
+export default Modal;
+
+```
+
+컴포넌트의 주요 동작 흐름은 다음과 같다.
+
+<br />
+
+1. useRef를 사용해 dialog 요소를 참조한다.
+
+2. Zustand 스토어에서 해당 ID의 모달 상태를 구독한다.
+
+3. useEffect를 이용해 모달의 열림 상태가 바뀔 때마다 showModal() 또는 close() 메서드를 호출한다.
+
+4. 모달이 닫힌 상태라면 null을 반환하여 컴포넌트 렌더링을 건너뛴다.
+
+5. Emotion CSS를 활용해 모달과 배경 스타일을 커스터마이징한다.
+
+## 사용 예시
+
+이 모달 컴포넌트는 다음과 같이 사용할 수 있다. 각 id 값은 고유해야 한다.
+
+```js
+import React from 'react';
+import Modal from '@/components/Modal';
+import useModalStore from '@/stores/useModalStore';
+
+const MyModalContent = () => {
+  return (
+    <div>
+      <h2>모달 제목</h2>
+      <p>모달 내용입니다.</p>
+    </div>
+  );
+};
+
+const MyComponent = () => {
+  const { openModal } = useModalStore();
+
+  return (
+    <div>
+      <button onClick={() => openModal('my-modal', 500)}>모달 열기</button>
+
+      <Modal id='my-modal' content={<MyModalContent />} />
+    </div>
+  );
+};
+
+export default MyComponent;
+```
+
+필요한 위치에서 openModal('my-modal')을 호출하여 모달을 열고, closeModal('my-modal')을 호출하여 모달을 닫을 수 있다. 뒤에 값을 넣어 넓이를 설정할 수 있고 넣지 않으면 기본 값이 적용된다.
+
+## 트러블 슈팅: Zustand의 상태관리 문제
+
+### 문제 상황
+
+1. **content 내부 값이 바뀔 때마다 모달이 리렌더링 되는 이슈**
+
+   처음에는 모달의 content를 Zustand 스토어 내에서 상태로 관리했다. 그래서 content 안에 선언된 인풋 값의 상태가 바뀔 때마다 리렌더링되어 값을 유지하지 못했다.
+
+2. **한 페이지에서 사이즈가 다른 모달을 여러 개 사용할 경우 나중에 선언된 사이즈만 적용되는 이슈**
+
+   한 페이지에서 여러 모달을 사용할 때, 각각 다른 크기를 가져야 하는 경우가 있었다. 그러나 초기 구현에서는 각 모달의 크기가 독립적으로 관리되지 않아 나중에 선언된 모달의 크기만 적용되는 문제가 있었다.
+
+### 문제 원인
+
+핵심 원인은 Zustand의 동작 방식에 있다. Zustand의 특정 상태(isOpen, content)를 구독하는 컴포넌트만 리렌더링 되는 구조이다.
+**즉, 모달 conten 내부의 인풋 값이 바뀌면 Zustand는 변경을 감지를 해 리렌더링을 시켜버린다.** 그래서 인풋 값이 유지되지 않고 날라가는 이슈가 발생했다.
+
+<br />
+
+**문제 코드**
+
+```js {title="기존 zustand 코드"}
+import { create } from 'zustand';
+
+interface ModalStateProps {
+  isOpen: boolean;
+  content: React.ReactNode | null;
+  openModal: (content: React.ReactNode) => void;
+  closeModal: () => void;
+}
+
+export const useModalStore = create<ModalStateProps>((set) => ({
+  isOpen: false,
+  content: null,
+  openModal: (content) => set({ isOpen: true, content }),
+  closeModal: () => set({ isOpen: false, content: null }),
+}));
+```
+
+```js {title="기존 컴포넌트 코드"}
+import { useEffect, useRef } from 'react';
+import { css } from '@emotion/react';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import IconButton from '@/components/IconButton';
+import { COLOR } from '@/constants/color';
+import { useModalStore } from '@/stores/useModalStore';
+
+interface ModalProps {
+  width?: number;
+}
+
+const Modal: React.FC<ModalProps> = ({ width = 336,  }) => {
+  const { isOpen, content, closeModal } = useModalStore();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen[id]) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [isOpen, id]);
+
+  return (
+    <dialog ref={dialogRef} css={modalStyle(width)}>
+      <div className='close-btn'>
+        <IconButton
+          IconComponent={CloseOutlinedIcon}
+          iconBgSize='lg'
+          shape='none'
+          handleClick={() => closeModal()}
+        />
+      </div>
+      {content[id]}
+    </dialog>
+  );
+};
+//생략
+
+export default Modal;
+
+```
+
+### 해결 방법
+
+**[시도 1] useCallback이나 useMemo 사용**
+
+useCallback이나 useMemo를 써봤지만, 결국 conten 내부 값이 바뀌기 때문에 리렌더링이 일어나는 것은 똑같았다.
+
+<br />
+
+**[시도 2] Zustand content에서 값을 알 수 있도록 content 내부에서 다양한 상태 관리(인풋과 라디오 상태)를 추가**
+
+모달 내부의 모든 상태(입력값, 라디오 선택 등)를 Zustand 스토어에서 관리하려 했지만, 이는 코드 복잡성을 크게 증가시켰고 모달 컴포넌트와 스토어 간의 의존성을 높였다.
+
+```
+import { create } from 'zustand';
+
+interface ModalStateProps {
+  modals: {
+    [key: string]: {
+      isOpen: boolean;
+      content: React.ReactNode | null;
+      inputValue1: string;
+      inputValue2: string;
+      radioValue: string;
+      width: number;
+    };
+  };
+  openModal: (id: string, content: React.ReactNode, width?: number) => void;
+  closeModal: (id: string) => void;
+  resetModal: (id: string) => void;
+  setInputValue: (id: string, field: string, value: string) => void;
+  setRadioValue: (id: string, value: string) => void;
+  setModalWidth: (id: string, width: number) => void;
+}
+
+export const useModalStore = create<ModalStateProps>((set) => ({
+  modals: {},
+  openModal: (id, content, width = 336) =>
+    set((state) => ({
+      modals: {
+        ...state.modals,
+        [id]: {
+          isOpen: true,
+          content,
+          inputValue1: state.modals[id]?.inputValue1 || '',
+          inputValue2: state.modals[id]?.inputValue2 || '',
+          radioValue: '',
+          width,
+        },
+      },
+    })),
+  closeModal: (id) =>
+    set((state) => ({
+      modals: {
+        ...state.modals,
+        [id]: { ...state.modals[id], isOpen: false },
+      },
+    })),
+  resetModal: (id) =>
+    set((state) => ({
+      modals: {
+        ...state.modals,
+        [id]: { ...state.modals[id], inputValue1: '', inputValue2: '' },
+      },
+    })),
+  setInputValue: (id, field, value) =>
+    set((state) => ({
+      modals: {
+        ...state.modals,
+        [id]: {
+          ...state.modals[id],
+          [field]: value,
+        },
+      },
+    })),
+  setRadioValue: (id, value) =>
+    set((state) => ({
+      modals: {
+        ...state.modals,
+        [id]: { ...state.modals[id], radioValue: value },
+      },
+    })),
+  setModalWidth: (id, width) =>
+    set((state) => ({
+      modals: {
+        ...state.modals,
+        [id]: { ...state.modals[id], width },
+      },
+    })),
+}));
+
+```
+
+<br />
+
+**[최종 해결책]**
+
+- **content를 props로 관리:** 모달 내용을 Zustand에서 분리하여 Modal 컴포넌트의 props로 전달
+- **모달별 ID 시스템 도입:** 각 모달에 고유 ID를 부여하여 독립적으로 상태 관리
+- **모달별 설정 분리:** 각 모달의 너비 등 설정을 독립적으로 관리
+
+## 회고
+
+트러블 슈팅을 겪으며 다행한 점을 배울 수 있었다.
+
+1. **상태 관리 위치의 중요성**
+
+   모든 상태를 전역 스토어에서 관리하는 것이 항상 최선은 아니라는 것을 배웠다. 특히 UI 컴포넌트 내부의 일시적인 상태는 해당 컴포넌트 내에서 관리하는 것이 더 효율적일 수 있다.
+
+2. **Zustand의 특성 이해**
+
+   Zustand는 상태 변경을 구독하는 메커니즘을 가진다. 복잡한 객체나 컴포넌트를 상태로 관리할 때 발생할 수 있는 리렌더링 이슈를 경험하면서, React 컴포넌트처럼 내부 상태가 자주 변경되는 객체를 Zustand 스토어에 직접 저장하는 것이 문제의 원인임을 깨달았다.
+   이런 특성을 이해한 후, 모달 내용(content)을 스토어가 아닌 컴포넌트 props로 전달하는 방식으로 변경했고,
+   선택적 상태 구독을 활용해 필요한 상태만 구독하도록 개선했다.

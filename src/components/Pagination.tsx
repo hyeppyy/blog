@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -34,6 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({
       {currentPage > 1 && (
         <button
           onClick={() => onPageChange(1)}
+          aria-label='첫 페이지로 이동하는 버튼'
           className='px-3 py-1 rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronsLeft />
@@ -43,6 +43,7 @@ const Pagination: React.FC<PaginationProps> = ({
       {currentPage > 1 && (
         <button
           onClick={() => onPageChange(currentPage - 1)}
+          aria-label='이전 페이지로 이동하는 버튼'
           className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronLeft />
@@ -53,6 +54,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           key={number}
           onClick={() => onPageChange(number)}
+          aria-label='페이지 이동 버튼'
           className={`w-[32px] h-[32px] px-3 py-1 rounded-full ${currentPage === number ? 'bg-[var(--primary)] dark:bg-[var(--primary-dark)] text-white dark:text-[var(--black-dark)]' : 'dark:text-[var(--gray-01-dark)] hover:bg-[var(--gray-01)] hover:dark:bg-[rgba(var(--white-rgb),0.15)]'}`}
         >
           {number}
@@ -62,6 +64,7 @@ const Pagination: React.FC<PaginationProps> = ({
       {currentPage < totalPages && (
         <button
           onClick={() => onPageChange(currentPage + 1)}
+          aria-label='다음 페이지로 이동하는 버튼'
           className='w-8 h-8 flex items-center justify-center rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronRight />
@@ -71,6 +74,7 @@ const Pagination: React.FC<PaginationProps> = ({
       {currentPage < totalPages && (
         <button
           onClick={() => onPageChange(totalPages)}
+          aria-label='마지막 페이지로 이동하는 버튼'
           className='px-3 py-1 rounded-full text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
         >
           <ChevronsRight />
