@@ -95,7 +95,9 @@ const PostList: React.FC<PostListProps> = ({ allTags, allPosts }) => {
       {filteredPosts.length > 0 ? (
         <ul>
           {currentPosts.map((post) => (
-            <PostCard key={post.slug} post={post} options={'list'} />
+            <li key={post.slug}>
+              <PostCard post={post} options={'list'} />
+            </li>
           ))}
         </ul>
       ) : (

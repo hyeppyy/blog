@@ -103,6 +103,7 @@ const ContentsNav: React.FC<ContentsNavProps> = ({ headings }) => {
             >
               <button
                 onClick={() => scrollToHeading(id)}
+                aria-label='타이틀로 이동하는 버튼'
                 className={`text-left w-full ${
                   isActive
                     ? 'text-[var(--primary)] dark:text-[var(--primary-dark)]'

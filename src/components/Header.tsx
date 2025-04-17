@@ -46,7 +46,7 @@ const Header = () => {
     >
       <section className='max-w-[1200px] w-full m-0 mx-auto flex items-center justify-between gap-[8px]'>
         <div className='relative'>
-          <Link href={'/'}>
+          <Link href={'/'} aria-label='메인 페이지로 이동하는 버튼'>
             <Image
               src={
                 isDarkMode
@@ -71,6 +71,7 @@ const Header = () => {
             className='hidden sm:flex items-center p-[4px] text-sm text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] hover:dark:text-[var(--primary-dark)] transition-all duration-300'
             href='https://github.com/hyeppyy'
             target='_blank'
+            aria-label='깃허브로 이동하는 버튼'
             rel='noopener noreferrer'
           >
             <Github size={20} />
@@ -91,6 +92,7 @@ const Header = () => {
               />
               <button
                 type='submit'
+                aria-label='검색 버튼'
                 className='absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray-03)] dark:text-[var(--gray-02-dark)] 
                       hover:text-[var(--primary)] transition-colors'
               >

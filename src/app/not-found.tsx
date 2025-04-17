@@ -17,6 +17,7 @@ const NotFound = () => (
     </h1>
     <Link
       href='/'
+      aria-label='메인 페이지로 이동하는 버튼'
       className='text-sm w-fit px-[12px] py-[8px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)] text-center'
     >
       메인 페이지로 이동

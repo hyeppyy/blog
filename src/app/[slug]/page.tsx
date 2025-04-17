@@ -101,16 +101,26 @@ const DetailPage = async ({ params }: ParamsProps) => {
         )}
         <MDXContentClient content={post.content} />
         <div className='w-full flex justify-end mt-[32px]'>
-          <Link href='/'>
-            <button className='text-sm w-fit px-[12px] py-[8px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'>
+          <Link href='/' aria-label='목록으로 이동하는 버튼'>
+            <button
+              aria-label='목록으로 이동하는 버튼'
+              className='text-sm w-fit px-[12px] py-[8px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] dark:hover:text-[var(--primary-dark)]'
+            >
               목록으로
             </button>
           </Link>
         </div>
         <div className='grid grid-cols-2 mt-[48px] gap-[24px]'>
           {prevPost && (
-            <Link href={`/${prevPost.slug}`} className='w-full'>
-              <button className='min-h-full flex flex-col gap-[6px] items-start w-full px-[14px] py-[16px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] hover:border-[var(--primary)] dark:hover:border-[var(--primary-dark)] transition-all duration-300'>
+            <Link
+              href={`/${prevPost.slug}`}
+              className='w-full'
+              aria-label='이전으로 이동하는 버튼'
+            >
+              <button
+                aria-label='이전으로 이동하는 버튼'
+                className='min-h-full flex flex-col gap-[6px] items-start w-full px-[14px] py-[16px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] hover:border-[var(--primary)] dark:hover:border-[var(--primary-dark)] transition-all duration-300'
+              >
                 <span className='text-sm text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
                   이전
                 </span>
@@ -123,8 +133,15 @@ const DetailPage = async ({ params }: ParamsProps) => {
           )}
 
           {nextPost && (
-            <Link href={`/${nextPost.slug}`} className='w-full'>
-              <button className='min-h-full flex flex-col gap-[6px] items-end w-full px-[14px] py-[16px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] hover:border-[var(--primary)] dark:hover:border-[var(--primary-dark)] transition-all duration-300'>
+            <Link
+              href={`/${nextPost.slug}`}
+              className='w-full'
+              aria-label='다음으로 이동하는 버튼'
+            >
+              <button
+                aria-label='다음으로 이동하는 버튼'
+                className='min-h-full flex flex-col gap-[6px] items-end w-full px-[14px] py-[16px] rounded-lg border border-[var(--gray-01-dark)] dark:border-[var(--gray-03-dark)] hover:border-[var(--primary)] dark:hover:border-[var(--primary-dark)] transition-all duration-300'
+              >
                 <span className='text-sm text-[var(--gray-02)] dark:text-[var(--gray-01-dark)]'>
                   다음
                 </span>
