@@ -14,7 +14,7 @@ const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ className }) => {
     <button
       onClick={toggleTheme}
       className={`${className} p-[4px] text-sm rounded-md text-[var(--gray-02)] dark:text-[var(--gray-01-dark)] hover:text-[var(--primary)] hover:dark:text-[var(--primary-dark)] transition-all duration-300`}
-      aria-label='Toggle Dark Mode'
+      aria-label='다크모드 전환 버튼'
     >
       {isDarkMode ? <Sun /> : <Moon />}
     </button>

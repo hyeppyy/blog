@@ -43,22 +43,62 @@ import Callout from '@/components/Callout';
 
 ### SSG 설정 방식
 
-SSG 설정 방식에는 크게 **두 가지**가 있다.
+Next.js는 App Router(app/) 구조에서 **기본적으로 정적 렌더링**을 수행한다.
+즉, 서버 컴포넌트에서 특별한 동적 데이터 패칭(fetch()의 no-store 옵션, 동적 함수 사용 등)이 없으면 빌드 시점에 HTML을 생성하는 SSG 방식으로 동작한다.
+async, await 자체는 렌더링 방식(SSG, SSR, CSR)에 직접적인 영향을 주지 않는다.
 
-1. **최상단에서 dynamic: 'force-static' 사용하기**<br />
+| 조건                              | 처리 방식 | 설명                                                                     |
+| --------------------------------- | --------- | ------------------------------------------------------------------------ |
+| 아무것도 안 쓰면                  | SSG       | 정적 생성 (기본값), 요청 시 서버에 부담 없음                             |
+| fetch 사용 + 기본 옵션            | SSR       | `cache: 'force-cache'`가 기본이 아니며, 요청 시 서버에서 데이터를 가져옴 |
+| fetch + `cache: 'force-cache'`    | SSG       | 정적 데이터 캐싱, 빌드 시 fetch 결과 포함                                |
+| fetch + `cache: 'no-store'`       | SSR       | 요청마다 데이터를 새로 fetch, SSR 처리됨                                 |
+| fetch + `next: { revalidate: 0 }` | SSR       | ISR 비활성화 → 매 요청마다 fetch (실질적으로 SSR)                        |
+| `dynamic: 'force-dynamic'`        | SSR       | 렌더링을 강제로 SSR로 지정                                               |
+| 클라이언트 컴포넌트 + `useEffect` | CSR       | 브라우저에서 데이터 요청, 서버는 HTML만 반환                             |
+
+<br />
+그러나 특정 상황에서는 명시적으로 SSG를 설정해야 할 필요가 있다.
+<br />
+
+1. **특정 페이지나 레이아웃에 SSG 강제 적용하기**<br />
    `dynamic: 'force-static'`은 Next.js에서 레이아웃 또는 최상단 컴포넌트에서 설정하여, **해당 레이아웃을 SSG 방식으로 처리하도록 강제하는 방법**이다.
-   이렇게 설정하면 해당 레이아웃을 사용하는 **모든 페이지**가 SSG 방식으로 처리되기 때문에 하위 페이지에서 별도로 `getStaticProps`를 사용할 필요가 없다.
+   이렇게 설정하면 해당 레이아웃을 사용하는 **모든 페이지**가 SSG 방식으로 처리된다.
 
-2. **각 페이지에서 getStaticProps 사용하기**<br />
-   페이지별로 다른 렌더링 방식을 사용해야 한다면 `getStaticProps`를 페이지마다 적용해 준다.
+   ```js {title="src/app/layout.tsx"}
+   export const dynamic = 'force-static';
+   ```
+
+2. **동적 라우팅 페이지에서 generateStaticParams() 사용하기**<br />
+   동적 세그먼트([slug], [id] 등)를 사용하는 경우에는 generateStaticParams()를 이용해 SSG에 필요한 경로 목록을 미리 정의해야 한다.
+   기존 Page Router의 getStaticPaths와 유사한 역할을 한다.
+
+   ```js {title="app/posts/[slug]/page.tsx"}
+   export async function generateStaticParams() {
+     const posts = await fetchPosts();
+     return posts.map((post) => ({ slug: post.slug }));
+   }
+   ```
 
    <br />
 
-나의 경우 모든 페이지에서 SSG를 적용해야하기 때문에 첫 번째 방법을 사용했다.
+   **Page Router VS App Router**
 
-```js {title="src/app/layout.tsx"}
-export const dynamic = 'force-static';
-```
+   | 항목          | 페이지 라우터 (pages/)                | 앱 라우터 (app/)                                             |
+   | ------------- | ------------------------------------- | ------------------------------------------------------------ |
+   | SSG 설정 방식 | `getStaticProps`, `getStaticPaths`    | `dynamic: 'force-static'`, `generateStaticParams`            |
+   | SSR 설정 방식 | `getServerSideProps`                  | `dynamic: 'force-dynamic'`                                   |
+   | CSR 설정 방식 | 기본적으로 클라이언트에서 데이터 처리 | `useEffect` + 클라이언트 컴포넌트 (`'use client'`) 선언 필요 |
+
+터미널에서 `npm run build` 해보면 SSG로 나오는 것을 확인할 수 있다.
+
+<Image
+  src='/images/posts/5-3.png'
+  alt='빌드 화면'
+  width={500}
+  height={300}
+  unoptimized={true}
+/>
 
 ### 트러블 슈팅 1: 필터링 후 새로고침 문제
 
