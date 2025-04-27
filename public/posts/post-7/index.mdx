@@ -6,7 +6,6 @@ thumbnail: '/images/thumbnail/7.png'
 tags: ['React', 'Zustand']
 ---
 
-import Image from 'next/image';
 import Callout from '@/components/Callout';
 
 # Zustand로 전역 상태 관리하는 Dialog 모달 컴포넌트 만들기
@@ -349,7 +348,7 @@ export default MyComponent;
 ### 문제 원인
 
 핵심 원인은 Zustand의 동작 방식에 있다. Zustand의 특정 상태(isOpen, content)를 구독하는 컴포넌트만 리렌더링 되는 구조이다.
-**즉, 모달 conten 내부의 인풋 값이 바뀌면 Zustand는 변경을 감지를 해 리렌더링을 시켜버린다.** 그래서 인풋 값이 유지되지 않고 날라가는 이슈가 발생했다.
+**즉, 모달 content 내부의 인풋 값이 바뀌면 Zustand는 변경을 감지를 해 리렌더링을 시켜버린다.** 그래서 인풋 값이 유지되지 않고 날라가는 이슈가 발생했다.
 
 <br />
 
@@ -424,7 +423,7 @@ export default Modal;
 
 **[시도 1] useCallback이나 useMemo 사용**
 
-useCallback이나 useMemo를 써봤지만, 결국 conten 내부 값이 바뀌기 때문에 리렌더링이 일어나는 것은 똑같았다.
+useCallback이나 useMemo를 써봤지만, 결국 content 내부 값이 바뀌기 때문에 리렌더링이 일어나는 것은 똑같았다.
 
 <br />
 
