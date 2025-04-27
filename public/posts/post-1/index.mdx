@@ -20,34 +20,29 @@ Type error: Type '{ params: { slug: string; }; }' does not satisfy the constrain
 
 프로젝트에서 Next.js 15 버전 사용 중이었는데, app 폴더 하위에서 post 페이지를 동적으로 불러오는 동적 라우팅의 타입이 **13버전 부터 Promise 타입으로 변경**되어서 발생하는 문제이다.
 
-Next.js 13 이상부터는 'params'와 'searchParams'가 비동기적으로 로드되는 데이터를 포함해야 할 경우, Promise 타입으로 처리해야 한다.
+Next.js 13 이상의 App Router에서는 params가 타입 시스템에서는 일반 객체로 정의되어 있지만, **실제 런타임에서는 Promise처럼 동작하기 때문에 await으로 처리해야 한다.** 이러한 타입 시스템과 실제 런타임 동작 사이의 불일치로 인해 타입 에러가 발생한다.
 
-아래 코드에서는 **params 객체의 타입을 Promise가 아닌 `slug: string`으로 지정하고 있어 문제가 발생한다.**
+<br />
+아래 코드에서는 params를 Promise로 처리하지 않고 일반 객체처럼 직접 접근하고
+있어 문제가 발생한다.
+
+<br />
 
 **문제 코드**
 
 ```js {title="src/app/[slug]/page.tsx"}
 import { getPost } from '@/utils/posts';
 
+interface ParamsProps {
+  params: Promise<{ slug: string }>;
+}
 
-const DetailPage = async ({ params }: { params: { slug: string } }) => {
-  const { slug } = params;
+const DetailPage = async ({ params }: ParamsProps) => {
+  // 문제: params를 Promise로 처리하지 않음
+  const { slug } = params; // await 없이 직접 접근
   const post = await getPost(slug);
-  const toc = await extractTableOfContents(post.content);
 
-  const flattenedHeadings = toc.flatMap((item) => {
-    const result = [item];
-    if (item.children) {
-      result.push(...item.children);
-
-      item.children.forEach((child) => {
-        if (child.children) {
-          result.push(...child.children);
-        }
-      });
-    }
-    return result;
-  });
+  //...생략
 ```
 
 ### Next.js 12 및 이전 버전 (Pages Router)
@@ -56,7 +51,8 @@ Next.js 12 및 이전 버전에서는 params를 처리할 때 동기적으로 �
 
 ```
 // Next.js 12 이하에서는 `params`가 비동기 처리가 없이 직접적으로 전달됨
-export async function getStaticProps({ params }: { params: { slug: string } }) {
+
+export async function getStaticProps({ params }: ParamsProps) {
   const { slug } = params;
   const post = await getPost(slug);
 
@@ -82,13 +78,17 @@ export async function getStaticPaths() {
 
 ### Next.js 13+ (App Router 도입)
 
-Next.js 13 이후부터 App Router가 도입되었다. params가 async 함수에서 처리되며, 해당 값은 Promise로 반환된다. 이로 인해 params를 처리할 때 비동기적으로 데이터를 가져오는 형태로 바뀌었다.
+Next.js 13 이후부터 App Router가 도입되었다. App Router에서는 params가 타입 시스템에서는 일반 객체로 정의되어 있을 수 있지만, 실제 런타임에서는 Promise처럼 동작한다.
+**따라서 params에 접근할 때는 반드시 await을 사용해야 한다.**
 
 ```
-// Next.js 13 이상에서는 `params`가 비동기적으로 처리되며,
-// `async` 함수 안에서 `params`를 사용할 때 `Promise`가 반환됨
-export const generateMetadata = async ({ params }: { params: { slug: string } }) => {
-  const { slug } = params; // 여기서 params는 비동기적으로 해결됨
+interface ParamsProps {
+  params: Promise<{ slug: string }>;
+}
+
+// Next.js 13 이상에서는 `params`가 Promise로 취급되므로 await으로 처리해야 함
+export const generateMetadata = async ({ params }: ParamsProps) => {
+  const { slug } = await params; // 여기서 params는 비동기적으로 해결됨
   const post = await getPost(slug);
 
   return {
@@ -101,30 +101,23 @@ export const generateMetadata = async ({ params }: { params: { slug: string } })
 
 ## 해결 방법
 
-params 타입을 Promise 타입으로 변경해주었다.
+**params를 await으로 처리해주었다.**
 불러온 값을 사용하기 위해서는 서버 컴포넌트인 경우, await 키워드를 사용해 필요한 값을 추출하고 클라이언트 컴포넌트인 경우, use 훅을 사용해 필요한 값을 추출한다. 예시 코드에서는 서버 컴포넌트이기 때문에 await 키워드를 사용했다.
+
+<br />
 
 **수정된 코드**
 
 ```
-type tParams = Promise<{ slug: string }>;
+import { getPost } from '@/utils/posts';
 
-export const generateMetadata = async ({
-  params,
-}: {
-  params: Params;
-}): Promise<Metadata> => {
-  const { slug } = params;
-  const post = await getPost(slug).catch(() => null);
-};
+interface ParamsProps {
+  params: Promise<{ slug: string }>;
+}
 
-const DetailPage = async ({ params }: { params: Params }) => {
-  const { slug } = params;
+const DetailPage = async ({ params }: ParamsProps) => {
+  const { slug } = await params; // await 추가
+  const post = await getPost(slug);
 
-  let post;
-  try {
-    post = await getPost(slug);
-  } catch {
-    return <div>포스트를 찾을 수 없습니다</div>;
-  }
+  //...생략
 ```
