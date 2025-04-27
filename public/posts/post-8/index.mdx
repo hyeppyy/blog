@@ -85,12 +85,12 @@ React Router에서 중첩 라우트를 구성할 때 상대 경로가 권장된�
 
 ```js
 {
-  path: signup/step1,
-  element: <SignupStepLayout />,
+  path: signup, // 부모 경로는 'signup'
+  element: <SignupStepLayout />, // 부모 컴포넌트
   children: [
-    { index: true, element: <SignUpType /> },
-    { path: 'form', element: <SignUpForm /> }, // 상대경로
-    { path: 'done', element: <SignUpDone /> }, // 상대경로
+    { index: true, element: <SignUpStep1 /> }, // 기본적으로 /signup 경로에서 렌더링되는 컴포넌트
+    { path: 'step2', element: <SignUpStep2 /> }, // 상대경로로 /signup/step2 경로
+    { path: 'step3', element: <SignUpStep3 /> }, // 상대경로로 /signup/step3 경로
   ],
 }
 ```
@@ -99,12 +99,12 @@ React Router에서 중첩 라우트를 구성할 때 상대 경로가 권장된�
 
 ```js
 {
-  path: 'signup/step1',
+  path: 'signup/step',
   element: <SignupStepLayout />,
   children: [
     { index: true, element: <SignUpStep1 /> },
-    { path: 'signup/step1/step2', element: <SignUpStep2 /> }, // 부모 경로 + 자식 경로
-    { path: 'signup/step1/step3', element: <SignUpStep3 /> }, // 부모 경로 + 자식 경로
+    { path: 'signup/step/2', element: <SignUpStep2 /> }, // 부모 경로 + 자식 경로
+    { path: 'signup/step/3', element: <SignUpStep3 /> }, // 부모 경로 + 자식 경로
   ],
 }
 ```
